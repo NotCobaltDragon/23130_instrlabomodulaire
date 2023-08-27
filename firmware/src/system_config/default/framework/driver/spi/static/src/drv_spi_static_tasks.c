@@ -49,7 +49,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 
 
-int32_t DRV_SPI1_PolledMasterEBM8BitTasks ( struct DRV_SPI_OBJ * dObj )
+int32_t DRV_SPI0_PolledMasterEBM8BitTasks ( struct DRV_SPI_OBJ * dObj )
 {
     volatile bool continueLoop;
     do {
@@ -91,10 +91,10 @@ int32_t DRV_SPI1_PolledMasterEBM8BitTasks ( struct DRV_SPI_OBJ * dObj )
             if
             (currentJob->dataLeftToTx +currentJob->dummyLeftToTx != 0)
         {
-            DRV_SPI1_MasterEBMSend8BitPolled(dObj);
+            DRV_SPI0_MasterEBMSend8BitPolled(dObj);
         }
         
-        DRV_SPI1_PolledErrorTasks(dObj);
+        DRV_SPI0_PolledErrorTasks(dObj);
         
         /* Figure out how many bytes are left to be received */
         volatile size_t bytesLeft = currentJob->dataLeftToRx + currentJob->dummyLeftToRx;
@@ -102,7 +102,7 @@ int32_t DRV_SPI1_PolledMasterEBM8BitTasks ( struct DRV_SPI_OBJ * dObj )
         // Check to see if we have any data left to receive and update the bytes left.
         if (bytesLeft != 0)
         {
-            DRV_SPI1_MasterEBMReceive8BitPolled(dObj);
+            DRV_SPI0_MasterEBMReceive8BitPolled(dObj);
             bytesLeft = currentJob->dataLeftToRx + currentJob->dummyLeftToRx;
         }
         if (bytesLeft == 0)

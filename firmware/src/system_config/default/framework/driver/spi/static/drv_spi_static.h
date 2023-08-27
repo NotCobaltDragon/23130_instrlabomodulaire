@@ -69,47 +69,47 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 // *********************************************************************************************
 // *********************************************************************************************
-// Section: System Interface Headers for the Instance 1 of SPI static driver
+// Section: System Interface Headers for the Instance 0 of SPI static driver
 // *********************************************************************************************
 // *********************************************************************************************
 
-SYS_MODULE_OBJ DRV_SPI1_Initialize( void );
-void DRV_SPI1_Deinitialize ( void );
-SYS_STATUS DRV_SPI1_Status ( void );
-void DRV_SPI1_Tasks ( void );
+SYS_MODULE_OBJ DRV_SPI0_Initialize( void );
+void DRV_SPI0_Deinitialize ( void );
+SYS_STATUS DRV_SPI0_Status ( void );
+void DRV_SPI0_Tasks ( void );
 
 // *********************************************************************************************
 // *********************************************************************************************
-// Section: General Client Interface Headers for the Instance 1 of SPI static driver
+// Section: General Client Interface Headers for the Instance 0 of SPI static driver
 // *********************************************************************************************
 // *********************************************************************************************
 
-DRV_HANDLE DRV_SPI1_Open ( const SYS_MODULE_INDEX drvIndex, const DRV_IO_INTENT ioIntent );
-void DRV_SPI1_Close ( void );
-int32_t DRV_SPI1_ClientConfigure ( const DRV_SPI_CLIENT_DATA * cfgData );
+DRV_HANDLE DRV_SPI0_Open ( const SYS_MODULE_INDEX drvIndex, const DRV_IO_INTENT ioIntent );
+void DRV_SPI0_Close ( void );
+int32_t DRV_SPI0_ClientConfigure ( const DRV_SPI_CLIENT_DATA * cfgData );
 
 // *********************************************************************************************
 // *********************************************************************************************
-// Section: Read & Write Client Interface Headers for the Instance 1 of SPI static driver
+// Section: Read & Write Client Interface Headers for the Instance 0 of SPI static driver
 // *********************************************************************************************
 // *********************************************************************************************
 
-DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddRead ( void *rxBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context);
+DRV_SPI_BUFFER_HANDLE DRV_SPI0_BufferAddRead ( void *rxBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context);
 
-DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddWrite ( void *txBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context );
+DRV_SPI_BUFFER_HANDLE DRV_SPI0_BufferAddWrite ( void *txBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context );
 
-DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddRead2 ( void *rxBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context, DRV_SPI_BUFFER_HANDLE * jobHandle);
+DRV_SPI_BUFFER_HANDLE DRV_SPI0_BufferAddRead2 ( void *rxBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context, DRV_SPI_BUFFER_HANDLE * jobHandle);
 
-DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddWrite2 ( void *txBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context, DRV_SPI_BUFFER_HANDLE * jobHandle );
+DRV_SPI_BUFFER_HANDLE DRV_SPI0_BufferAddWrite2 ( void *txBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context, DRV_SPI_BUFFER_HANDLE * jobHandle );
 
-DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddWriteRead2 ( void *txBuffer, size_t txSize,void *rxBuffer, size_t rxSize, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context,  DRV_SPI_BUFFER_HANDLE * jobHandle);
+DRV_SPI_BUFFER_HANDLE DRV_SPI0_BufferAddWriteRead2 ( void *txBuffer, size_t txSize,void *rxBuffer, size_t rxSize, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context,  DRV_SPI_BUFFER_HANDLE * jobHandle);
 
-DRV_SPI_BUFFER_EVENT DRV_SPI1_BufferStatus ( DRV_SPI_BUFFER_HANDLE bufferHandle );
+DRV_SPI_BUFFER_EVENT DRV_SPI0_BufferStatus ( DRV_SPI_BUFFER_HANDLE bufferHandle );
 
 /* This API name was present in the old static driver which is maintained for compatibility.
    So, giving a new name for the new static driver which is taken care of while mapping */
-#define  DRV_SPI1_BufferAddWriteReadNew(txbuff, txsize, rxbuff, rxsize, cb, ct ) \
-    DRV_SPI1_BufferAddWriteRead2((txbuff), (txsize), (rxbuff), (rxsize), (cb), (ct), NULL)
+#define  DRV_SPI0_BufferAddWriteReadNew(txbuff, txsize, rxbuff, rxsize, cb, ct ) \
+    DRV_SPI0_BufferAddWriteRead2((txbuff), (txsize), (rxbuff), (rxsize), (cb), (ct), NULL)
 
 
 
@@ -118,9 +118,9 @@ DRV_SPI_BUFFER_EVENT DRV_SPI1_BufferStatus ( DRV_SPI_BUFFER_HANDLE bufferHandle 
 // Section: Old static driver compatibility APIs, these will be deprecated.
 // *********************************************************************************************
 // *********************************************************************************************
-bool DRV_SPI1_ReceiverBufferIsFull( void );
-bool DRV_SPI1_TransmitterBufferIsFull( void );
-int32_t DRV_SPI1_BufferAddWriteRead(const void * txBuffer, void * rxBuffer, uint32_t size);
+bool DRV_SPI0_ReceiverBufferIsFull( void );
+bool DRV_SPI0_TransmitterBufferIsFull( void );
+int32_t DRV_SPI0_BufferAddWriteRead(const void * txBuffer, void * rxBuffer, uint32_t size);
 // *********************************************************************************************
 
 

@@ -56,7 +56,7 @@ void Display_TimerCallback(void){
         disp.refreshTickEvent = true;
         disp.refreshDelayCount = 0;
     }
-    LED_GREEN_Toggle();
+    LED1Toggle();
 }
 /* -------------------------------------------------------------------------- */
 /**

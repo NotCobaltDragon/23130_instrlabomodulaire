@@ -83,20 +83,36 @@ APP_DATA appData;
 // Section: Application Callback Functions
 // *****************************************************************************
 // *****************************************************************************
+void APP_MainTimerCallback()
+{
+	appData.mainTimerCount++;
+	if(appData.mainTimerCount >= APP_HEARTBEAT_DELAY_100ms)
+	{
+		appData.mainTimerCount = 0;
+		appData.mainTimerDelayHasElapsed = true;
+	}
+	LED1Off();
+}
 
-/* TODO:  Add any necessary callback functions.
-*/
+void APP_Uart1Callback()
+{
+
+}
+
+void APP_Uart2Callback()
+{
+	
+}
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Local Functions
 // *****************************************************************************
 // *****************************************************************************
-
-
-/* TODO:  Add any necessary local functions.
-*/
-
+void UpdateDisplayValues()
+{
+	//updates display values
+}
 
 // *****************************************************************************
 // *****************************************************************************
@@ -114,13 +130,13 @@ APP_DATA appData;
 
 void APP_Initialize ( void )
 {
-		/* Place the App state machine in its initial state. */
-		appData.state = APP_STATE_INIT;
+	/* Place the App state machine in its initial state. */
+	appData.state = APP_STATE_INIT;
 
-		
-		/* TODO: Initialize your application's state machine and other
-		 * parameters.
-		 */
+	appData.mainTimerCount = 0;
+	appData.mainTimerDelayHasElapsed = false;
+	appData.currentScreen = DISP_SCR_WELCOME;
+	appData.backlightColor = COL_GREEN_CUSTOM;
 }
 
 
@@ -134,39 +150,58 @@ void APP_Initialize ( void )
 
 void APP_Tasks ( void )
 {
+	if(appData.mainTimerDelayHasElapsed)
+	{
+		appData.mainTimerDelayHasElapsed = false;
+		LED1On();
 
-		/* Check the application's current state. */
-		switch ( appData.state )
+		UpdateDisplayValues();
+	}
+
+	/* Check the application's current state. */
+	switch ( appData.state )
+	{
+		/* Application's initial state. */
+		case APP_STATE_INIT:
 		{
-				/* Application's initial state. */
-				case APP_STATE_INIT:
-				{
-						
-						
-						
-						Init_LCD();
-						
-						//TODO: Function for reseting all modules (RST1...RST7)
-						appData.state = APP_STATE_SERVICE_TASKS;
-						break;
-				}
-
-				case APP_STATE_SERVICE_TASKS:
-				{
-				
-						break;
-				}
-
-				/* TODO: implement your application state machine.*/
-				
-
-				/* The default state should never be executed. */
-				default:
-				{
-						/* TODO: Handle error in application's state machine. */
-						break;
-				}
+			DRV_TMR0_Start();
+			DRV_TMR1_Start();
+			appData.mainTimerDelayHasElapsed = false;			
+			
+			DisplayInit();
+			DisplayScreen(DISP_SCR_WELCOME, false);
+			
+			//TODO: Function for reseting all modules (RST1...RST7)
+			appData.state = APP_STATE_SERVICE_TASKS;
+			break;
 		}
+
+		case APP_STATE_POWER_ON:
+		{
+
+			break;
+		}
+
+		case APP_STATE_SERVICE_TASKS:
+		{
+			Display_Task();
+		
+			break;
+		}
+
+		case APP_STATE_DISPLAY_CHANGE:
+		{
+			appData.state = APP_STATE_SERVICE_TASKS;
+			break;
+		}
+
+		/* The default state should never be executed. */
+		default:
+		{
+			/* TODO: Handle error in application's state machine. */
+			break;
+		}
+	}
 }
 
  

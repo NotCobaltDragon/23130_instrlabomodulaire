@@ -47,8 +47,8 @@ extern "C" {
 #define LCD_HEIGHT          64
 #define LCD_PAGES           8
 #define LCD_BAUDRATE        1250000         // must be < 2.5 Mbits/s
-#define LCD_DRV_SPI_INDEX   DRV_SPI_INDEX_1 // Changer si autre instance utilisee
-    
+#define LCD_DRV_SPI_INDEX   DRV_SPI_INDEX_0 // Changer si autre instance utilisee
+
 #define LCD_CMD_BUF_SIZE    8
 #define LCD_DATA_BUF_SIZE   128
 

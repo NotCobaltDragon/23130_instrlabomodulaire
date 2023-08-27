@@ -74,7 +74,7 @@ void SYS_Tasks ( void )
     /* Maintain system services */
 
     /* Maintain Device Drivers */
-    DRV_SPI_Tasks(sysObj.spiObjectIdx1);
+    DRV_SPI_Tasks(sysObj.spiObjectIdx0);
 
     /* Maintain Middleware & Other Libraries */
 

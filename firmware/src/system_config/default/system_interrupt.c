@@ -2,30 +2,30 @@
  System Interrupts File
 
   File Name:
-    system_interrupt.c
+	system_interrupt.c
 
   Summary:
-    Raw ISR definitions.
+	Raw ISR definitions.
 
   Description:
-    This file contains a definitions of the raw ISRs required to support the
-    interrupt sub-system.
+	This file contains a definitions of the raw ISRs required to support the
+	interrupt sub-system.
 
   Summary:
-    This file contains source code for the interrupt vector functions in the
-    system.
+	This file contains source code for the interrupt vector functions in the
+	system.
 
   Description:
-    This file contains source code for the interrupt vector functions in the
-    system.  It implements the system and part specific vector "stub" functions
-    from which the individual "Tasks" functions are called for any modules
-    executing interrupt-driven in the MPLAB Harmony system.
+	This file contains source code for the interrupt vector functions in the
+	system.  It implements the system and part specific vector "stub" functions
+	from which the individual "Tasks" functions are called for any modules
+	executing interrupt-driven in the MPLAB Harmony system.
 
   Remarks:
-    This file requires access to the systemObjects global data structure that
-    contains the object handles to all MPLAB Harmony module objects executing
-    interrupt-driven in the system.  These handles are passed into the individual
-    module "Tasks" functions to identify the instance of the module to maintain.
+	This file requires access to the systemObjects global data structure that
+	contains the object handles to all MPLAB Harmony module objects executing
+	interrupt-driven in the system.  These handles are passed into the individual
+	module "Tasks" functions to identify the instance of the module to maintain.
  *******************************************************************************/
 
 // DOM-IGNORE-BEGIN
@@ -68,16 +68,29 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // Section: System Interrupt Vector Functions
 // *****************************************************************************
 // *****************************************************************************
+void __ISR(_UART_1_VECTOR, ipl5AUTO) _IntHandlerDrvUsartInstance0(void)
+{
+    DRV_USART_TasksTransmit(sysObj.drvUsart0);
+    DRV_USART_TasksError(sysObj.drvUsart0);
+    DRV_USART_TasksReceive(sysObj.drvUsart0);
+}
 
+void __ISR(_UART_2_VECTOR, ipl5AUTO) _IntHandlerDrvUsartInstance1(void)
+{
+    DRV_USART_TasksTransmit(sysObj.drvUsart1);
+    DRV_USART_TasksError(sysObj.drvUsart1);
+    DRV_USART_TasksReceive(sysObj.drvUsart1);
+}
  
-
 void __ISR(_TIMER_1_VECTOR, ipl1AUTO) IntHandlerDrvTmrInstance0(void)
 {
-    PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_1);
+	APP_MainTimerCallback();  
+	PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_1);
 }
 void __ISR(_TIMER_3_VECTOR, ipl1AUTO) IntHandlerDrvTmrInstance1(void)
 {
-    PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_3);
+	Display_TimerCallback();
+	PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_3);
 }
  
 

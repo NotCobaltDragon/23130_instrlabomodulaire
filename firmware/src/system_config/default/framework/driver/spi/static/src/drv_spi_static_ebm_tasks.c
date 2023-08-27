@@ -47,7 +47,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_config.h"
 #include "system_definitions.h"
 #include "driver/spi/static/src/drv_spi_static_local.h"
-int32_t DRV_SPI1_MasterEBMSend8BitPolled( struct DRV_SPI_OBJ * pDrvObj )
+int32_t DRV_SPI0_MasterEBMSend8BitPolled( struct DRV_SPI_OBJ * pDrvObj )
 {
     register DRV_SPI_JOB_OBJECT * currentJob = pDrvObj->currentJob;
 
@@ -92,7 +92,7 @@ int32_t DRV_SPI1_MasterEBMSend8BitPolled( struct DRV_SPI_OBJ * pDrvObj )
     return 0;
 }
 
-int32_t DRV_SPI1_MasterEBMReceive8BitPolled( struct DRV_SPI_OBJ * pDrvObj )
+int32_t DRV_SPI0_MasterEBMReceive8BitPolled( struct DRV_SPI_OBJ * pDrvObj )
 {
     register DRV_SPI_JOB_OBJECT * currentJob = pDrvObj->currentJob;
 

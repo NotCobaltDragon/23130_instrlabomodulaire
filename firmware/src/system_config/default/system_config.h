@@ -90,9 +90,9 @@ extern "C" {
 /*** Ports System Service Configuration ***/
 #define SYS_PORT_A_ANSEL        0xF860
 #define SYS_PORT_A_TRIS         0xFB72
-#define SYS_PORT_A_LAT          0x0000
+#define SYS_PORT_A_LAT          0x0001
 #define SYS_PORT_A_ODC          0x0000
-#define SYS_PORT_A_CNPU         0x0000
+#define SYS_PORT_A_CNPU         0x0080
 #define SYS_PORT_A_CNPD         0x0000
 #define SYS_PORT_A_CNEN         0x0000
 
@@ -139,8 +139,8 @@ extern "C" {
 #define DRV_SPI_DMA 				0
 
 /*** SPI Driver Static Allocation Options ***/
-#define DRV_SPI_INSTANCES_NUMBER 		2
-#define DRV_SPI_CLIENTS_NUMBER 			2
+#define DRV_SPI_INSTANCES_NUMBER 		1
+#define DRV_SPI_CLIENTS_NUMBER 			1
 #define DRV_SPI_ELEMENTS_PER_QUEUE 		10
 /*** Timer Driver Configuration ***/
 #define DRV_TMR_INTERRUPT_MODE             true
@@ -171,7 +171,65 @@ extern "C" {
 #define DRV_TMR_ASYNC_WRITE_ENABLE_IDX1     false
 #define DRV_TMR_POWER_STATE_IDX1            
 
- 
+ // *****************************************************************************
+/* USART Driver Configuration Options
+*/
+#define DRV_USART_INTERRUPT_MODE                    true
+
+#define DRV_USART_BYTE_MODEL_SUPPORT                true
+
+#define DRV_USART_READ_WRITE_MODEL_SUPPORT          false
+
+#define DRV_USART_BUFFER_QUEUE_SUPPORT              false
+
+#define DRV_USART_CLIENTS_NUMBER                    1
+#define DRV_USART_INSTANCES_NUMBER                  2
+
+#define DRV_USART_PERIPHERAL_ID_IDX0                USART_ID_1
+#define DRV_USART_OPER_MODE_IDX0                    DRV_USART_OPERATION_MODE_NORMAL
+#define DRV_USART_OPER_MODE_DATA_IDX0               
+#define DRV_USART_INIT_FLAG_WAKE_ON_START_IDX0      false
+#define DRV_USART_INIT_FLAG_AUTO_BAUD_IDX0          false
+#define DRV_USART_INIT_FLAG_STOP_IN_IDLE_IDX0       false
+#define DRV_USART_INIT_FLAGS_IDX0                   0
+#define DRV_USART_BRG_CLOCK_IDX0                    48000000
+#define DRV_USART_BAUD_RATE_IDX0                    9600
+#define DRV_USART_LINE_CNTRL_IDX0                   DRV_USART_LINE_CONTROL_8NONE1
+#define DRV_USART_HANDSHAKE_MODE_IDX0               DRV_USART_HANDSHAKE_NONE
+#define DRV_USART_LINES_ENABLE_IDX0                 USART_ENABLE_TX_RX_USED
+#define DRV_USART_XMIT_INT_SRC_IDX0                 INT_SOURCE_USART_1_TRANSMIT
+#define DRV_USART_RCV_INT_SRC_IDX0                  INT_SOURCE_USART_1_RECEIVE
+#define DRV_USART_ERR_INT_SRC_IDX0                  INT_SOURCE_USART_1_ERROR
+#define DRV_USART_INT_VECTOR_IDX0                   INT_VECTOR_UART1
+#define DRV_USART_INT_PRIORITY_IDX0                 INT_PRIORITY_LEVEL5
+#define DRV_USART_INT_SUB_PRIORITY_IDX0             INT_SUBPRIORITY_LEVEL0
+
+
+#define DRV_USART_POWER_STATE_IDX0                  SYS_MODULE_POWER_RUN_FULL
+
+#define DRV_USART_PERIPHERAL_ID_IDX1                USART_ID_2
+#define DRV_USART_OPER_MODE_IDX1                    DRV_USART_OPERATION_MODE_NORMAL
+#define DRV_USART_OPER_MODE_DATA_IDX1               
+#define DRV_USART_INIT_FLAG_WAKE_ON_START_IDX1      false
+#define DRV_USART_INIT_FLAG_AUTO_BAUD_IDX1          false
+#define DRV_USART_INIT_FLAG_STOP_IN_IDLE_IDX1       false
+#define DRV_USART_INIT_FLAGS_IDX1                   0
+#define DRV_USART_BRG_CLOCK_IDX1                    48000000
+#define DRV_USART_BAUD_RATE_IDX1                    9600
+#define DRV_USART_LINE_CNTRL_IDX1                   DRV_USART_LINE_CONTROL_8NONE1
+#define DRV_USART_HANDSHAKE_MODE_IDX1               DRV_USART_HANDSHAKE_NONE
+#define DRV_USART_LINES_ENABLE_IDX1                 USART_ENABLE_TX_RX_USED
+#define DRV_USART_XMIT_INT_SRC_IDX1                 INT_SOURCE_USART_2_TRANSMIT
+#define DRV_USART_RCV_INT_SRC_IDX1                  INT_SOURCE_USART_2_RECEIVE
+#define DRV_USART_ERR_INT_SRC_IDX1                  INT_SOURCE_USART_2_ERROR
+#define DRV_USART_INT_VECTOR_IDX1                   INT_VECTOR_UART2
+#define DRV_USART_INT_PRIORITY_IDX1                 INT_PRIORITY_LEVEL5
+#define DRV_USART_INT_SUB_PRIORITY_IDX1             INT_SUBPRIORITY_LEVEL1
+
+
+#define DRV_USART_POWER_STATE_IDX1                  SYS_MODULE_POWER_RUN_FULL
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Middleware & Other Library Configuration
@@ -187,19 +245,19 @@ extern "C" {
 // *****************************************************************************
 /*** Application Defined Pins ***/
 
-/*** Functions for RS485_RE pin ***/
-#define RS485_REToggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_10)
-#define RS485_REOn() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_10)
-#define RS485_REOff() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_10)
-#define RS485_REStateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_10)
-#define RS485_REStateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_10, Value)
+/*** Functions for RS485_RE_ pin ***/
+#define RS485_RE_Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_10)
+#define RS485_RE_On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_10)
+#define RS485_RE_Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_10)
+#define RS485_RE_StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_10)
+#define RS485_RE_StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_10, Value)
 
-/*** Functions for RS485_DE pin ***/
-#define RS485_DEToggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_11)
-#define RS485_DEOn() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_11)
-#define RS485_DEOff() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_11)
-#define RS485_DEStateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_11)
-#define RS485_DEStateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_11, Value)
+/*** Functions for RS485_DE_ pin ***/
+#define RS485_DE_Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_11)
+#define RS485_DE_On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_11)
+#define RS485_DE_Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_11)
+#define RS485_DE_StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_11)
+#define RS485_DE_StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_11, Value)
 
 /*** Functions for RST2 pin ***/
 #define RST2Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_13)
@@ -215,26 +273,26 @@ extern "C" {
 #define RST1StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_10)
 #define RST1StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_10, Value)
 
-/*** Functions for LCD_A0 pin ***/
-#define LCD_A0Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_7)
-#define LCD_A0On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_7)
-#define LCD_A0Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_7)
-#define LCD_A0StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_7)
-#define LCD_A0StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_7, Value)
+/*** Functions for LCD_A0_ pin ***/
+#define LCD_A0_Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_7)
+#define LCD_A0_On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_7)
+#define LCD_A0_Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_7)
+#define LCD_A0_StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_7)
+#define LCD_A0_StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_7, Value)
 
-/*** Functions for LCD_RESET pin ***/
-#define LCD_RESETToggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_15)
-#define LCD_RESETOn() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_15)
-#define LCD_RESETOff() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_15)
-#define LCD_RESETStateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_15)
-#define LCD_RESETStateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_15, Value)
+/*** Functions for LCD_RESET_ pin ***/
+#define LCD_RESET_Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_15)
+#define LCD_RESET_On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_15)
+#define LCD_RESET_Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_15)
+#define LCD_RESET_StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_15)
+#define LCD_RESET_StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_15, Value)
 
-/*** Functions for LCD_CS pin ***/
-#define LCD_CSToggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_0)
-#define LCD_CSOn() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_0)
-#define LCD_CSOff() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_0)
-#define LCD_CSStateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_0)
-#define LCD_CSStateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_0, Value)
+/*** Functions for LCD_CS_ pin ***/
+#define LCD_CS_Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_0)
+#define LCD_CS_On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_0)
+#define LCD_CS_Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_0)
+#define LCD_CS_StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_0)
+#define LCD_CS_StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_0, Value)
 
 /*** Functions for LED1 pin ***/
 #define LED1Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_2)
@@ -264,13 +322,6 @@ extern "C" {
 #define RST4StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_3)
 #define RST4StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_3, Value)
 
-/*** Functions for RST7 pin ***/
-#define RST7Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
-#define RST7On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
-#define RST7Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
-#define RST7StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5)
-#define RST7StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_5, Value)
-
 /*** Functions for RST6 pin ***/
 #define RST6Toggle() PLIB_PORTS_PinToggle(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_7)
 #define RST6On() PLIB_PORTS_PinSet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_7)
@@ -284,6 +335,9 @@ extern "C" {
 #define RST5Off() PLIB_PORTS_PinClear(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_8)
 #define RST5StateGet() PLIB_PORTS_PinGetLatched(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_8)
 #define RST5StateSet(Value) PLIB_PORTS_PinWrite(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_8, Value)
+
+/*** Functions for USB_Detect pin ***/
+#define USB_DetectStateGet() PLIB_PORTS_PinGet(PORTS_ID_0, PORT_CHANNEL_B, PORTS_BIT_POS_9)
 
 /*** Functions for PEC_A pin ***/
 #define PEC_AStateGet() PLIB_PORTS_PinGet(PORTS_ID_0, PORT_CHANNEL_A, PORTS_BIT_POS_8)

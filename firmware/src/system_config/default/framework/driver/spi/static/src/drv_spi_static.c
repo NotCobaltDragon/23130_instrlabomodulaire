@@ -87,17 +87,17 @@ DRV_SPI_SYS_QUEUE_MANAGER_HANDLE  hQueueManager;
 
 // *****************************************************************************
 // *****************************************************************************
-// Section: Instance 1 static driver functions
+// Section: Instance 0 static driver functions
 // *****************************************************************************
 // *****************************************************************************
 /* This is the driver static object . */
-DRV_SPI_OBJ  gDrvSPI1Obj ;
+DRV_SPI_OBJ  gDrvSPI0Obj ;
 
-SYS_MODULE_OBJ DRV_SPI1_Initialize(void)
+SYS_MODULE_OBJ DRV_SPI0_Initialize(void)
 {
     DRV_SPI_OBJ *dObj = (DRV_SPI_OBJ*)NULL;
 
-    dObj = &gDrvSPI1Obj;
+    dObj = &gDrvSPI0Obj;
 
     /* Disable the SPI module to configure it*/
     PLIB_SPI_Disable ( SPI_ID_1 );
@@ -149,6 +149,13 @@ SYS_MODULE_OBJ DRV_SPI1_Initialize(void)
     PLIB_SPI_BufferClear( SPI_ID_1 );
     PLIB_SPI_ReceiverOverflowClear ( SPI_ID_1 );
 
+    /* Initialize Queue only once for all instances of SPI driver*/
+    if (DRV_SPI_SYS_QUEUE_Initialize(&qmInitData, &hQueueManager) != DRV_SPI_SYS_QUEUE_SUCCESS)
+    {
+        SYS_ASSERT(false, "\r\nSPI Driver: Could not create queuing system.");
+        return SYS_MODULE_OBJ_INVALID;
+    }
+
     /* Update the Queue parameters. */
     qInitData.maxElements = 10; //Queue size
     qInitData.reserveElements = 1; //Mininmum number of job queues reserved
@@ -168,10 +175,10 @@ SYS_MODULE_OBJ DRV_SPI1_Initialize(void)
     /* Enable the Module */
     PLIB_SPI_Enable(SPI_ID_1);
 
-    return (SYS_MODULE_OBJ)DRV_SPI_INDEX_1 ;
+    return (SYS_MODULE_OBJ)DRV_SPI_INDEX_0 ;
 }
 
-void DRV_SPI1_Deinitialize ( void )
+void DRV_SPI0_Deinitialize ( void )
 {
     /* Disable the SPI Module */
     PLIB_SPI_Disable(SPI_ID_1);
@@ -179,33 +186,33 @@ void DRV_SPI1_Deinitialize ( void )
     return;
 }
 
-SYS_STATUS DRV_SPI1_Status ( void )
+SYS_STATUS DRV_SPI0_Status ( void )
 {
     /* Return the current status of driver instance */
     return SYS_STATUS_READY;
 }
 
-void DRV_SPI1_Tasks ( void )
+void DRV_SPI0_Tasks ( void )
 {
     /* Call the respective task routine */
-    DRV_SPI1_PolledMasterEBM8BitTasks(&gDrvSPI1Obj);
+    DRV_SPI0_PolledMasterEBM8BitTasks(&gDrvSPI0Obj);
 }
 
-DRV_HANDLE DRV_SPI1_Open ( const SYS_MODULE_INDEX index, const DRV_IO_INTENT intent )
+DRV_HANDLE DRV_SPI0_Open ( const SYS_MODULE_INDEX index, const DRV_IO_INTENT intent )
 {
-    return (DRV_HANDLE)DRV_SPI_INDEX_1;
+    return (DRV_HANDLE)DRV_SPI_INDEX_0;
 }
 
-void DRV_SPI1_Close ( void )
+void DRV_SPI0_Close ( void )
 {
     return;
 }
 
-int32_t DRV_SPI1_ClientConfigure ( const DRV_SPI_CLIENT_DATA * cfgData  )
+int32_t DRV_SPI0_ClientConfigure ( const DRV_SPI_CLIENT_DATA * cfgData  )
 {
     DRV_SPI_OBJ *dObj = (DRV_SPI_OBJ*)NULL;
 
-    dObj = &gDrvSPI1Obj;
+    dObj = &gDrvSPI0Obj;
 
     if (cfgData == NULL)
     {
@@ -234,11 +241,11 @@ int32_t DRV_SPI1_ClientConfigure ( const DRV_SPI_CLIENT_DATA * cfgData  )
     return 0;
 }
 
-DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddRead2 ( void *rxBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context, DRV_SPI_BUFFER_HANDLE * jobHandle)
+DRV_SPI_BUFFER_HANDLE DRV_SPI0_BufferAddRead2 ( void *rxBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context, DRV_SPI_BUFFER_HANDLE * jobHandle)
 {
     DRV_SPI_OBJ *dObj = (DRV_SPI_OBJ*)NULL;
 
-    dObj = &gDrvSPI1Obj;
+    dObj = &gDrvSPI0Obj;
 
     DRV_SPI_JOB_OBJECT * pJob = NULL;
 
@@ -272,11 +279,11 @@ DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddRead2 ( void *rxBuffer, size_t size, DRV
 }
 
 
-DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddWrite2 ( void *txBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context, DRV_SPI_BUFFER_HANDLE * jobHandle )
+DRV_SPI_BUFFER_HANDLE DRV_SPI0_BufferAddWrite2 ( void *txBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context, DRV_SPI_BUFFER_HANDLE * jobHandle )
 {
     DRV_SPI_OBJ *dObj = (DRV_SPI_OBJ*)NULL;
 
-    dObj = &gDrvSPI1Obj;
+    dObj = &gDrvSPI0Obj;
 
     DRV_SPI_JOB_OBJECT * pJob = NULL;
     if (DRV_SPI_SYS_QUEUE_AllocElementLock(dObj->queue, (void **)&pJob) != DRV_SPI_SYS_QUEUE_SUCCESS)
@@ -308,11 +315,11 @@ DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddWrite2 ( void *txBuffer, size_t size, DR
 }
 
 
-DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddWriteRead2 ( void *txBuffer, size_t txSize, void *rxBuffer, size_t rxSize, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context, DRV_SPI_BUFFER_HANDLE * jobHandle )
+DRV_SPI_BUFFER_HANDLE DRV_SPI0_BufferAddWriteRead2 ( void *txBuffer, size_t txSize, void *rxBuffer, size_t rxSize, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context, DRV_SPI_BUFFER_HANDLE * jobHandle )
 {
     DRV_SPI_OBJ *dObj = (DRV_SPI_OBJ*)NULL;
 
-    dObj = &gDrvSPI1Obj;
+    dObj = &gDrvSPI0Obj;
 
     DRV_SPI_JOB_OBJECT * pJob = NULL;
     if (DRV_SPI_SYS_QUEUE_AllocElementLock(dObj->queue, (void **)&pJob) != DRV_SPI_SYS_QUEUE_SUCCESS)
@@ -353,17 +360,17 @@ DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddWriteRead2 ( void *txBuffer, size_t txSi
 }
 
 
-DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddRead ( void *rxBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context)
+DRV_SPI_BUFFER_HANDLE DRV_SPI0_BufferAddRead ( void *rxBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context)
 {
-    return DRV_SPI1_BufferAddRead2(rxBuffer, size, completeCB, context, NULL);
+    return DRV_SPI0_BufferAddRead2(rxBuffer, size, completeCB, context, NULL);
 }
 
-DRV_SPI_BUFFER_HANDLE DRV_SPI1_BufferAddWrite ( void *txBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context )
+DRV_SPI_BUFFER_HANDLE DRV_SPI0_BufferAddWrite ( void *txBuffer, size_t size, DRV_SPI_BUFFER_EVENT_HANDLER completeCB, void * context )
 {
-    return DRV_SPI1_BufferAddWrite2(txBuffer, size, completeCB, context, NULL);
+    return DRV_SPI0_BufferAddWrite2(txBuffer, size, completeCB, context, NULL);
 }
 
-DRV_SPI_BUFFER_EVENT DRV_SPI1_BufferStatus ( DRV_SPI_BUFFER_HANDLE bufferHandle )
+DRV_SPI_BUFFER_EVENT DRV_SPI0_BufferStatus ( DRV_SPI_BUFFER_HANDLE bufferHandle )
 {
     DRV_SPI_JOB_OBJECT * pJob = (DRV_SPI_JOB_OBJECT *)bufferHandle;
 
@@ -371,7 +378,7 @@ DRV_SPI_BUFFER_EVENT DRV_SPI1_BufferStatus ( DRV_SPI_BUFFER_HANDLE bufferHandle 
 }
 
 
-int32_t DRV_SPI1_PolledErrorTasks(struct DRV_SPI_OBJ * dObj)
+int32_t DRV_SPI0_PolledErrorTasks(struct DRV_SPI_OBJ * dObj)
 {
 
     if (dObj->currentJob == NULL)
@@ -410,17 +417,17 @@ int32_t DRV_SPI1_PolledErrorTasks(struct DRV_SPI_OBJ * dObj)
 // Section: Old static driver compatibility APIs, these will be deprecated.
 // *********************************************************************************************
 // *********************************************************************************************
-bool DRV_SPI1_ReceiverBufferIsFull(void)
+bool DRV_SPI0_ReceiverBufferIsFull(void)
 {
     return (PLIB_SPI_ReceiverBufferIsFull(SPI_ID_1));
 }
 
-bool DRV_SPI1_TransmitterBufferIsFull(void)
+bool DRV_SPI0_TransmitterBufferIsFull(void)
 {
     return (PLIB_SPI_TransmitBufferIsFull(SPI_ID_1));
 }
 
-int32_t DRV_SPI1_BufferAddWriteRead(const void * txBuffer, void * rxBuffer, uint32_t size)
+int32_t DRV_SPI0_BufferAddWriteRead(const void * txBuffer, void * rxBuffer, uint32_t size)
 {
     bool continueLoop;
     int32_t txcounter = 0;

@@ -44,7 +44,7 @@ static T_LCD LCD;
  */
 void LCD_ComTransferStart(){
     LCD.transferIsInProgress = true;
-    SS_DIS_Off();
+    LCD_CS_Off();
 }
 
 /* -------------------------------------------------------------------------- */
@@ -54,7 +54,7 @@ void LCD_ComTransferStart(){
  * 
  */
 void LCD_ComTransferEnd(){
-    SS_DIS_On();
+    LCD_CS_On();
     LCD.transferIsInProgress = false;
 }
 
@@ -86,7 +86,7 @@ void LCD_BufferWriteEnd (){
  *          Les donnees sont prises dans le buffer de la variable LCD
  */
 void LCD_WriteCommand(){
-    A0_DIS_Off();           // pour commande
+    LCD_A0_Off();       // pour commande           
     LCD.bufHandleSPI = DRV_SPI_BufferAddWrite2( 
             LCD.handleSPI,
             LCD.cmdBuffer, LCD.cmdBufSize,
@@ -100,7 +100,7 @@ void LCD_WriteCommand(){
  *          Les donnees sont prises dans le buffer de la variable LCD
 */
 void LCD_WriteData(){
-    A0_DIS_On();           // pour des donnees
+    LCD_A0_On();        // pour des donnees
     LCD.bufHandleSPI = DRV_SPI_BufferAddWrite2( 
             LCD.handleSPI,
             LCD.dataBuffer, LCD.dataBufSize,
@@ -289,7 +289,8 @@ void LCD_DataWrite(uint8_t *buf, uint8_t bufSize, uint8_t page, uint8_t column){
  * 
  */
 void LCD_Reset(){
-    RESET_DIS_Off();                // reset pin low -> hardware reset
+    LCD_RESET_Off();
+    //RESET_DIS_Off();                // reset pin low -> hardware reset
     LCD.state = LCD_STATE_RESET;
     LCD.initStep = 10;              // pour boucler et stabiliser apres reset
 }
@@ -335,8 +336,8 @@ bool LCD_Task_IsReady(){
     switch (LCD.state)
     {
         /* relacher la pulse de reset et passer a l'init du LCD */
-        case LCD_STATE_RESET:{           
-            RESET_DIS_On();
+        case LCD_STATE_RESET:{
+            LCD_RESET_On();
 
             if (LCD.initStep == 0) { // boucle stabilisation apres reset (pas tres joli, mais bon...)
                 LCD.state = LCD_STATE_INIT_7565;
