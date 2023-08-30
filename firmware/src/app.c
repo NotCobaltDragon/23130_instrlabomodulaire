@@ -78,6 +78,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 APP_DATA appData;
 
+VOLTMETER_23132 voltmeter23132;
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Functions
@@ -91,7 +93,7 @@ void APP_MainTimerCallback()
 		appData.mainTimerCount = 0;
 		appData.mainTimerDelayHasElapsed = true;
 	}
-	LED1Off();
+	LED2Off();
 }
 
 void APP_Uart1Callback()
@@ -101,7 +103,7 @@ void APP_Uart1Callback()
 
 void APP_Uart2Callback()
 {
-	
+
 }
 
 // *****************************************************************************
@@ -112,6 +114,8 @@ void APP_Uart2Callback()
 void UpdateDisplayValues()
 {
 	//updates display values
+	//appData.valueVoltmeter = appData.valueVoltmeter + 0.01;
+	DisplayValues_23132(voltmeter23132.valueVoltmeter, voltmeter23132.currentMode, voltmeter23132.holdMode, appData.position);
 }
 
 // *****************************************************************************
@@ -135,8 +139,10 @@ void APP_Initialize ( void )
 
 	appData.mainTimerCount = 0;
 	appData.mainTimerDelayHasElapsed = false;
+	appData.secondsCount = 0;
 	appData.currentScreen = DISP_SCR_WELCOME;
-	appData.backlightColor = COL_GREEN_CUSTOM;
+	appData.backlightColor = COL_WHITE;
+	appData.position = 1;
 }
 
 
@@ -153,8 +159,8 @@ void APP_Tasks ( void )
 	if(appData.mainTimerDelayHasElapsed)
 	{
 		appData.mainTimerDelayHasElapsed = false;
-		LED1On();
-
+		LED2On();
+		appData.secondsCount++;
 		UpdateDisplayValues();
 	}
 
@@ -164,33 +170,59 @@ void APP_Tasks ( void )
 		/* Application's initial state. */
 		case APP_STATE_INIT:
 		{
+			//Pec12Init();
 			DRV_TMR0_Start();
 			DRV_TMR1_Start();
+			DRV_TMR2_Start();
 			appData.mainTimerDelayHasElapsed = false;			
 			
 			DisplayInit();
 			DisplayScreen(DISP_SCR_WELCOME, false);
 			
-			//TODO: Function for reseting all modules (RST1...RST7)
-			appData.state = APP_STATE_SERVICE_TASKS;
+			appData.state = APP_STATE_POWER_ON;
+			
 			break;
 		}
 
 		case APP_STATE_POWER_ON:
 		{
-
+			//TODO: Function for reseting all modules (RST1...RST7)
+			VoltmeterInit();
+			appData.state = APP_STATE_SERVICE_TASKS;	
 			break;
 		}
 
 		case APP_STATE_SERVICE_TASKS:
 		{
+			
 			Display_Task();
-		
+			Menu_Task();
+
+			if(voltmeter23132.valueVoltmeter < 200)
+			{
+				voltmeter23132.valueVoltmeter += 0.1;
+			}
+			else
+			{
+				voltmeter23132.valueVoltmeter = 0.72;
+			}
+
+			if(appData.secondsCount >= 15)
+			{
+				//send RS485
+				appData.state = APP_STATE_DISPLAY_CHANGE;
+			}
 			break;
 		}
 
 		case APP_STATE_DISPLAY_CHANGE:
 		{
+			appData.secondsCount = 0;
+			appData.currentScreen = DISP_SCR_23132;
+			DisplayScreen(appData.currentScreen, false);
+			UpdateDisplayValues();
+			//appData.backlightColor = COL_WHITE;
+			DisplaySetBacklightRGB(appData.backlightColor);
 			appData.state = APP_STATE_SERVICE_TASKS;
 			break;
 		}
@@ -204,7 +236,12 @@ void APP_Tasks ( void )
 	}
 }
 
- 
+void VoltmeterInit()
+{
+	voltmeter23132.currentMode = DC_MODE;
+	voltmeter23132.holdMode = false;
+	voltmeter23132.valueVoltmeter = 0.72;
+}
 
 /*******************************************************************************
  End of File

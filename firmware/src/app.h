@@ -60,6 +60,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_definitions.h"
 #include "Display.h"
 #include "RS485_Driver.h"
+#include "Menu_Driver.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -76,6 +77,9 @@ extern "C" {
 // *****************************************************************************
 /** @name Time & delays definitions in tenths of a second (*0.1 = s)... */
 #define APP_HEARTBEAT_DELAY_100ms   10      ///< ...to monitor app life
+
+#define DC_MODE false
+#define AC_MODE true
 
 // *****************************************************************************
 /* Application states
@@ -137,11 +141,27 @@ typedef struct
 
 	uint32_t mainTimerCount;
 	bool mainTimerDelayHasElapsed;
+	uint32_t secondsCount;
 
 	uint8_t currentScreen;
 	uint32_t backlightColor;
 
+	uint8_t position;
+	bool selected;
+
+	bool pec12Inc;
+	bool pec12Dec;
+	bool pec12Pb;
+
 } APP_DATA;
+
+typedef struct
+{
+	float valueVoltmeter;
+	bool currentMode;
+	bool holdMode;
+} VOLTMETER_23132;
+
 
 
 // *****************************************************************************
@@ -224,6 +244,8 @@ void APP_Initialize ( void );
  */
 
 void APP_Tasks( void );
+
+void VoltmeterInit(void);
 
 
 #endif /* _APP_H */

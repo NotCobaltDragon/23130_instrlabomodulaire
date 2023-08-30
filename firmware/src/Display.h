@@ -58,7 +58,7 @@ extern "C" {
 #define DISPLAY_PAGE_HEIGHT     8
 #define DISPLAY_PAGES           8
 #define DISPLAY_SCROLL_STEP     8
-    
+	
 /** @name Definitions pour le backlight RGB */
 #define DISP_BLRGB_PWM_PERIOD   6249    // timer 3 (10ms)
 #define DISP_BLRGB_PWM_FACTOR   DISP_BLRGB_PWM_PERIOD/255
@@ -92,25 +92,23 @@ extern "C" {
 // *****************************************************************************
 /** @name Liste des ecrans a afficher */
 typedef enum{
-    DISP_SCR_WELCOME=0,             ///< ecran d'accueil
-            /* Liste des ecrans */
-            DISP_SCR_NR_1,          ///< page ecran no ...
-            DISP_SCR_NR_2,           
-            DISP_SCR_NR_3, 
-            
-            DISP_SCR_LAST
+	DISP_SCR_WELCOME=0,             ///< ecran d'accueil
+			/* Liste des ecrans */
+			DISP_SCR_MAIN_MENU,          ///< page ecran no ...
+			DISP_SCR_23132,
+			DISP_SCR_LAST
 } E_DISPLAY_SCREENS;
 
 /** @name Liste de commandes d'affichage */
 typedef enum {
-    DISP_CMD_NOCMD=0,                   ///< Pas de commande
-            DISP_CMD_SCROLLDOWN_CLEAR,  ///< Effacement pour mode de defilement
+	DISP_CMD_NOCMD=0,                   ///< Pas de commande
+			DISP_CMD_SCROLLDOWN_CLEAR,  ///< Effacement pour mode de defilement
 } T_DISP_COMMAND;
 
 /** @name Etats de l'affichage */
 typedef enum{
-    DISP_STATE_WAIT_REFRESH=0,          ///< Etat d'attente d'un refresh
-            DISP_STATE_REFRESHING,      ///< Etat d'execution du refresh du LCD
+	DISP_STATE_WAIT_REFRESH=0,          ///< Etat d'attente d'un refresh
+			DISP_STATE_REFRESHING,      ///< Etat d'execution du refresh du LCD
 //            DISP_STATE_SCROLLDOWN_CLEAR
 } DISPLAY_STATES;
 
@@ -119,17 +117,17 @@ typedef uint8_t T_DISPLAY_MATRIX [DISPLAY_PAGES] [DISPLAY_WIDTH] ;
 
 /** @name structure des donnees pour l'affichage */
 typedef struct{
-    T_DISPLAY_MATRIX screenCopy;
-    uint8_t currentScreenNr;
-    bool warningDataCanBeDisplayed;
-    uint8_t page;
-    uint8_t scrollLine;
-    bool refreshTickEvent;
-    uint8_t refreshDelayCount;
-    uint8_t graphTime;
-    T_DISP_COMMAND command;
-    DISPLAY_STATES state;
-    UG_GUI gui;
+	T_DISPLAY_MATRIX screenCopy;
+	uint8_t currentScreenNr;
+	bool warningDataCanBeDisplayed;
+	uint8_t page;
+	uint8_t scrollLine;
+	bool refreshTickEvent;
+	uint8_t refreshDelayCount;
+	uint8_t graphTime;
+	T_DISP_COMMAND command;
+	DISPLAY_STATES state;
+	UG_GUI gui;
 } T_DISPLAY;
 
 /* ************************************************************************** */
@@ -192,15 +190,6 @@ void DisplayScrollClear();
  */
 void DisplayClear(bool setToClear);
 
-/* -------------------------------------------------------------------------- */
-/**
- * @brief   Display specific data according screen in use
- *          -- EXEMPLE DE FONCTION A ADAPTER --
- * 
- * @param   x, y, z     valeurs a afficher
- */
-void DisplayValues_Ex_1(double x, double y, double z);
-
 /* ----------------------------------------------------------------------------*/
 /**
  * @brief   Display specific data according screen in use
@@ -210,34 +199,11 @@ void DisplayValues_Ex_1(double x, double y, double z);
  * @param  b    valeur b
  * @param  c    valeur c 
  */
-void DisplayValues_Ex_2(double a, double b, double c);
+void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position);
 
-/* ----------------------------------------------------------------------------*/
-/**
- * @brief   Display specific data according screen in use**
- * 
- * @param   x, y, z, h    valeurs a afficher
- */
-void DisplayValues_Ex_3(int16_t x, int16_t y, int16_t z, int16_t h);
-   
-/* -------------------------------------------------------------------------- */
-/**
- * @brief   Display specific data according screen in use
- *          -- EXEMPLE de fonction graphique sur un Screen defini (switch case)
- * 
- * @param   tpaRSSILevel, vpaRSSILevel      level sur une echelle de 0 a 5
- */
-void Display_RSSI(uint8_t tpaRSSILevel, uint8_t vpaRSSILevel);
+//void DrawMenuIcon(bool selected);
 
-/* -------------------------------------------------------------------------- */
-/**
- * @brief   Display specific data according screen in use
-  *          -- EXEMPLE de fonction graphique sur un Screen defini (switch case)
-* 
- * @param   heatIsOn        true -> symbol displayed, false -> no symbol
- * @param   temp_celsius    temperature
- */
-void DisplayHeatSymbol(bool heatIsOn, double temp_celsius);
+void DisplayScreen_23132(bool setToDark);
 
 /* -------------------------------------------------------------------------- */
 /**
@@ -267,7 +233,7 @@ void Display_Task();
 
 ///@}
 
-    /* Provide C++ Compatibility */
+	/* Provide C++ Compatibility */
 #ifdef __cplusplus
 }
 #endif
