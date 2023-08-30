@@ -44,6 +44,7 @@
         <itemPath>../src/ugui.h</itemPath>
         <itemPath>../src/ugui_config.h</itemPath>
         <itemPath>../src/Menu_Driver.h</itemPath>
+        <itemPath>../src/GesPec12.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="driver" projectFiles="true">
@@ -188,6 +189,7 @@
         <itemPath>../src/LCD_Driver.c</itemPath>
         <itemPath>../src/ugui.c</itemPath>
         <itemPath>../src/Menu_Driver.c</itemPath>
+        <itemPath>../src/GesPec12.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="driver" projectFiles="true">
@@ -480,6 +482,11 @@
         <property key="programoptions.uselvpprogramming" value="false"/>
         <property key="voltagevalue" value="3.25"/>
       </PICkit3PlatformTool>
+      <PK5Tool>
+        <property key="memories.programmemory.ranges" value="1d000000-1d03ffff"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/microchip/harmony/v2_06/apps/2313_instrlabomodulaire/23130_instrlabomodulaire/firmware/23130_instrlabomodulaire.X/debug/default/23130_instrlabomodulaire_ptg"/>
+      </PK5Tool>
       <Tool>
         <property key="ADC 1" value="true"/>
         <property key="AutoSelectMemRanges" value="auto"/>

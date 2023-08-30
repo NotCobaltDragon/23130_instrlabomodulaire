@@ -1,4 +1,3 @@
-
 #include "Menu_Driver.h"
 
 
@@ -17,13 +16,16 @@ void Menu_Task()
 		{
 			if(appData.pec12Inc == true)
 			{
-				if(appData.position != 3){appData.position++;}
-				appData.pec12Inc = false;
+				if(appData.position != 2){appData.position++;}
+
+				//appData.pec12Inc = false;
+				Pec12IncClear();
 			}
 			else if(appData.pec12Dec == true)
 			{
 				if(appData.position != 0){appData.position--;}
-				appData.pec12Dec = false;
+				//appData.pec12Dec = false;
+				Pec12DecClear();
 			}
 			else if(appData.pec12Pb == true)
 			{
@@ -41,8 +43,8 @@ void Menu_Task()
 					default:
 						break;
 				}
-				//appData.selected = true;
-				appData.pec12Pb = false;
+				//appData.pec12Pb = false;
+				Pec12PbClear();
 			}
 
 

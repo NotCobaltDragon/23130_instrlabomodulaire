@@ -61,6 +61,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include "system/common/sys_common.h"
 #include "app.h"
+#include "GesPec12.h"
 #include "system_definitions.h"
 
 extern APP_DATA	appData;
@@ -102,42 +103,7 @@ void __ISR(_TIMER_3_VECTOR, ipl5AUTO) IntHandlerDrvTmrInstance1(void)
 
 void __ISR(_TIMER_2_VECTOR, ipl2AUTO) IntHandlerDrvTmrInstance2(void)
 {
-	uint8_t currentPecAState;
-	static uint8_t	oldPecAState = 0;
-	uint8_t currentPecBState;
-	uint8_t currentPecPbState;
-	static uint8_t oldPecPbState = 1;
-	
-
-	currentPecAState = PEC_AStateGet();
-	currentPecBState = PEC_BStateGet();
-	currentPecPbState = PEC_PBStateGet();
-
-	if(currentPecAState < oldPecAState)
-	{
-		if(currentPecBState != currentPecAState)
-		{
-			if(appData.pec12Inc != true)
-				appData.pec12Inc = true;
-				LED1Toggle();
-		}
-		else
-		{
-			if(appData.pec12Dec != true)
-				appData.pec12Dec = true;
-				LED1Toggle();
-		}
-	}
-	if(currentPecPbState < oldPecPbState)
-	{
-		if(appData.pec12Pb != true)
-		{
-			appData.pec12Pb = true;
-			LED1Toggle();
-		}
-	}
-	oldPecAState = currentPecAState;
-	oldPecPbState = currentPecPbState;
+	ScanPec12();
     PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_2);
 }
  

@@ -306,7 +306,7 @@
       <Template dnOrder="26">
         <Name dnOrder="0">drv_tmr_static.c</Name>
         <Path dnOrder="1">Source&amp;#160;Files/app/system_config/default/framework/driver/tmr/src</Path>
-        <Checksum dnOrder="2">07C7B65E06C8EB35DB2FDE4B65D4CA15</Checksum>
+        <Checksum dnOrder="2">90AF0312EF2C0CFF994958E3141E7C52</Checksum>
       </Template>
       <Template dnOrder="27">
         <Name dnOrder="0">drv_spi_static_sys_queue.c</Name>

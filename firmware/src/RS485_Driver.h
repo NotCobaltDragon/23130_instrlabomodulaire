@@ -1,4 +1,5 @@
-
+#ifndef RS485_DRIVER_H
+#define RS485_DRIVER_H
 
 #include <stdio.h>
 
@@ -8,3 +9,5 @@
 #define RECEIVING 1
 
 
+
+#endif
