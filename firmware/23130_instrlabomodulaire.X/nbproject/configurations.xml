@@ -44,7 +44,7 @@
         <itemPath>../src/ugui.h</itemPath>
         <itemPath>../src/ugui_config.h</itemPath>
         <itemPath>../src/Menu_Driver.h</itemPath>
-        <itemPath>../src/GesPec12.h</itemPath>
+        <itemPath>../src/Encoder_Driver.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="driver" projectFiles="true">
@@ -189,7 +189,7 @@
         <itemPath>../src/LCD_Driver.c</itemPath>
         <itemPath>../src/ugui.c</itemPath>
         <itemPath>../src/Menu_Driver.c</itemPath>
-        <itemPath>../src/GesPec12.c</itemPath>
+        <itemPath>../src/Encoder_Driver.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
         <logicalFolder name="f1" displayName="driver" projectFiles="true">

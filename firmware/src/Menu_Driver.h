@@ -1,8 +1,15 @@
-#ifndef MENU_DRIVER_h
+//-----------------------------------------------------------
+// File Name    : Menu_Driver.h		                        |
+// Project Name : 23130_instrlabomodulaire                  |
+// Version      : V1                                        |
+// Date         : 30.08.2023                                |
+// Author       : Alexandre Steffen                         |
+//-----------------------------------------------------------
+#ifndef MENU_DRIVER_h	/* Guard against multiple inclusion */
 #define MENU_DRIVER_h
 
 #include "app.h"
-#include "GesPec12.h"
+#include "Encoder_Driver.h"
 #include <stdint.h>                   
 #include <stdbool.h>
 

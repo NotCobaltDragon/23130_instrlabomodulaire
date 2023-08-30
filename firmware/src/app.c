@@ -114,7 +114,6 @@ void APP_Uart2Callback()
 void UpdateDisplayValues()
 {
 	//updates display values
-	//appData.valueVoltmeter = appData.valueVoltmeter + 0.01;
 	DisplayValues_23132(voltmeter23132.valueVoltmeter, voltmeter23132.currentMode, voltmeter23132.holdMode, appData.position);
 }
 
@@ -142,7 +141,7 @@ void APP_Initialize ( void )
 	appData.secondsCount = 0;
 	appData.currentScreen = DISP_SCR_WELCOME;
 	appData.backlightColor = COL_WHITE;
-	appData.position = 1;
+	appData.position = 0;
 }
 
 

@@ -61,7 +61,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include "system/common/sys_common.h"
 #include "app.h"
-#include "GesPec12.h"
+#include "Encoder_Driver.h"
 #include "system_definitions.h"
 
 extern APP_DATA	appData;

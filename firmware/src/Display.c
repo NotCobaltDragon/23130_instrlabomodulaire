@@ -273,13 +273,15 @@ void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, 
 
 	if(disp.currentScreenNr == DISP_SCR_23132)
 	{
-		
-		UG_FontSelect(&FONT_16X26);
-		UG_SetBackcolor (C_WHITE);
-		UG_SetForecolor (C_BLACK);
-		//sprintf(str, "%d", position);
-		sprintf(str, "%2.2f", voltmeterValue);
-		UG_PutString(3, 17, str);
+		if(holdMode == false)
+		{
+			UG_FontSelect(&FONT_16X26);
+			UG_SetBackcolor (C_WHITE);
+			UG_SetForecolor (C_BLACK);
+			//sprintf(str, "%d", position);
+			sprintf(str, "%2.2f", voltmeterValue);
+			UG_PutString(3, 17, str);
+		}
 		DrawMenuIcon(false);
 		DrawCurrentMode(currentMode, false);
 		DrawHoldMode(holdMode, false);

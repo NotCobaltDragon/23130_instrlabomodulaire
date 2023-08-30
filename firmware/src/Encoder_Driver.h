@@ -1,7 +1,13 @@
-#ifndef ENCODER_DRIVER_H
+//-----------------------------------------------------------
+// File Name    : Encoder_Driver.h                          |
+// Project Name : 23130_instrlabomodulaire                  |
+// Version      : V1                                        |
+// Date         : 30.08.2023                                |
+// Author       : Alexandre Steffen                         |
+//-----------------------------------------------------------
+#ifndef ENCODER_DRIVER_H    /* Guard against multiple inclusion */
 #define ENCODER_DRIVER_H
 
-// définitions des types qui seront utilisés dans cette application
 #include "app.h"
 
 
@@ -25,6 +31,5 @@ void Pec12PbSet();
 void Pec12IncClear();
 void Pec12DecClear();
 void Pec12PbClear();
-
 
 #endif
