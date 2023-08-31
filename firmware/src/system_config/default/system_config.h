@@ -194,7 +194,7 @@ extern "C" {
 
 #define DRV_USART_BUFFER_QUEUE_SUPPORT              false
 
-#define DRV_USART_CLIENTS_NUMBER                    1
+#define DRV_USART_CLIENTS_NUMBER                    2
 #define DRV_USART_INSTANCES_NUMBER                  2
 
 #define DRV_USART_PERIPHERAL_ID_IDX0                USART_ID_2

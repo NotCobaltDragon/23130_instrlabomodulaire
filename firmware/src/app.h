@@ -145,6 +145,7 @@ typedef struct
 
 	uint8_t currentScreen;
 	uint32_t backlightColor;
+	bool needDisplayUpdate;
 
 	uint8_t position;
 	bool selected;
@@ -247,6 +248,7 @@ void APP_Tasks( void );
 
 void VoltmeterInit(void);
 
+void NeedDisplayUpdate(void);
 
 #endif /* _APP_H */
 

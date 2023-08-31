@@ -23,19 +23,21 @@ void Menu_Task()
 		{
 			if(appData.pec12Inc == true)
 			{
-				if(appData.position != 2){appData.position++;}
-
-				//appData.pec12Inc = false;
+				NeedDisplayUpdate();
+				if(appData.position != 2)
+					appData.position++;
 				Pec12IncClear();
 			}
 			else if(appData.pec12Dec == true)
 			{
-				if(appData.position != 0){appData.position--;}
-				//appData.pec12Dec = false;
+				NeedDisplayUpdate();
+				if(appData.position != 0)
+					appData.position--;
 				Pec12DecClear();
 			}
 			else if(appData.pec12Pb == true)
 			{
+				NeedDisplayUpdate();
 				switch(appData.position)
 				{
 					case 0:

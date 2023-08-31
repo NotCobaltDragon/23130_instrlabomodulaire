@@ -153,6 +153,8 @@ void APP_Initialize ( void )
 		See prototype in app.h.
  */
 
+uint8_t testCount = 0; //Test for counting, must be removed
+
 void APP_Tasks ( void )
 {
 	if(appData.mainTimerDelayHasElapsed)
@@ -160,6 +162,7 @@ void APP_Tasks ( void )
 		appData.mainTimerDelayHasElapsed = false;
 		LED2On();
 		appData.secondsCount++;
+		testCount++;
 		UpdateDisplayValues();
 	}
 
@@ -173,7 +176,8 @@ void APP_Tasks ( void )
 			DRV_TMR0_Start();
 			DRV_TMR1_Start();
 			DRV_TMR2_Start();
-			appData.mainTimerDelayHasElapsed = false;			
+			appData.mainTimerDelayHasElapsed = false;
+			Init_RS485(SENDING);	
 			
 			DisplayInit();
 			DisplayScreen(DISP_SCR_WELCOME, false);
@@ -187,6 +191,7 @@ void APP_Tasks ( void )
 		{
 			//TODO: Function for reseting all modules (RST1...RST7)
 			VoltmeterInit();
+			NeedDisplayUpdate();
 			appData.state = APP_STATE_SERVICE_TASKS;	
 			break;
 		}
@@ -206,21 +211,32 @@ void APP_Tasks ( void )
 				voltmeter23132.valueVoltmeter = 0.72;
 			}
 
+			//if(appData.needDisplayUpdate == true)
+			//{
+			//	appData.state = APP_STATE_DISPLAY_CHANGE;
+			//}
+
 			if(appData.secondsCount >= 15)
 			{
 				//send RS485
 				appData.state = APP_STATE_DISPLAY_CHANGE;
+			}
+
+			if(testCount >= 50)
+			{
+				SendMessage(E_ID_1, E_CMD_VOLTMMODE, AC_MODE);
+
 			}
 			break;
 		}
 
 		case APP_STATE_DISPLAY_CHANGE:
 		{
+			appData.needDisplayUpdate = false;
 			appData.secondsCount = 0;
 			appData.currentScreen = DISP_SCR_23132;
 			DisplayScreen(appData.currentScreen, false);
 			UpdateDisplayValues();
-			//appData.backlightColor = COL_WHITE;
 			DisplaySetBacklightRGB(appData.backlightColor);
 			appData.state = APP_STATE_SERVICE_TASKS;
 			break;
@@ -240,6 +256,11 @@ void VoltmeterInit()
 	voltmeter23132.currentMode = DC_MODE;
 	voltmeter23132.holdMode = false;
 	voltmeter23132.valueVoltmeter = 0.72;
+}
+
+void NeedDisplayUpdate()
+{
+	appData.needDisplayUpdate = true;
 }
 
 /*******************************************************************************

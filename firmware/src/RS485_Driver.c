@@ -5,40 +5,66 @@
 // Date         : 30.08.2023                                |
 // Author       : Alexandre Steffen                         |
 //-----------------------------------------------------------
-
-
 #include "RS485_Driver.h"
-#include "RS485_Commands.h"
+#include "system_config.h"
+#include "system_definitions.h"
 
+#define MESS_SIZE
 
-void Init_RS485()
+RS485_DATA rs485Data;
+
+S_TX_CARRIER txCarrier;
+
+//const char *cmdStrings[] = {CMD_STRINGS};
+
+void Init_RS485(bool defaultMode)
 {
 	//Init
-	if(DEFAULT_RS485_MODE == SENDING)
+	rs485Data.usartHandle = DRV_USART_Open(DRV_USART_INDEX_0, DRV_IO_INTENT_NONBLOCKING);
+
+	if(defaultMode == SENDING)
 		RS485_Sending_Mode();
 	else
 		RS485_Receiving_Mode();
-
 }
 
-void SendMessage(uint8_t id, char command, uint8_t parameter)
+void SendMessage(E_ID id, E_Command command, uint8_t parameter)
 {
-	sendString[20];
+	char sendString[20];
+	uint8_t nbByteWritten;
+	uint8_t sizeString = 0;
+	uint8_t bufferSize;
+
+	sprintf(sendString, "ID%d%s", id, cmdStrings[command]);
+	bufferSize = strlen(sendString);
 
 
-
-	sprintf(sendString, "ID%d", id);
-
-
+	do
+	{
+		nbByteWritten = DRV_USART_Write(rs485Data.usartHandle, &sendString[sizeString], bufferSize - sizeString);
+		sizeString += nbByteWritten;
+	}while(sizeString < bufferSize);
 }
 
 int GetMessage()
 {
+	int commStatus = 0;
 
 
 	return commStatus;
 }
 
+
+
+void ParityCheckHandler()
+{
+
+}
+
+void ResponseTimoutHandler()
+{
+
+}
 
 
 void RS485_Sending_Mode()
@@ -52,3 +78,5 @@ void RS485_Receiving_Mode()
 	RS485_RE_Off();
 	RS485_DE_Off();
 }
+
+

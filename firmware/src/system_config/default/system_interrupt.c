@@ -78,7 +78,7 @@ void __ISR(_UART_2_VECTOR, ipl5AUTO) _IntHandlerDrvUsartInstance0(void)
     DRV_USART_TasksError(sysObj.drvUsart0);
     DRV_USART_TasksReceive(sysObj.drvUsart0);
 }
-
+ 
  
  
 
@@ -88,7 +88,8 @@ void __ISR(_UART_1_VECTOR, ipl5AUTO) _IntHandlerDrvUsartInstance1(void)
     DRV_USART_TasksError(sysObj.drvUsart1);
     DRV_USART_TasksReceive(sysObj.drvUsart1);
 }
- 
+
+
 void __ISR(_TIMER_1_VECTOR, ipl5AUTO) IntHandlerDrvTmrInstance0(void)
 {
 	APP_MainTimerCallback();  
