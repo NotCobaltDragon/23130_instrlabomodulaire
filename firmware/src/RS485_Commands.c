@@ -7,10 +7,10 @@
 //-----------------------------------------------------------
 #include "RS485_Commands.h"
 
-const char* cmdStrings[][3] = 
+const char cmdData[4][4] = 
 {
-	"ERR"
-	"ID?"	//E_CMD_IDQUESTION
-	"VMG"	//E_CMD_VOLTMGAIN
-	"VMM"	//E_CMD_VOLTMMODE
+	"ERR",	//DO NOT USE
+	"ID?",	//E_CMD_IDQUESTION
+	"VMG",	//E_CMD_VOLTMGAIN
+	"VMM",	//E_CMD_VOLTMMODE
 };

@@ -13,6 +13,8 @@
 #include <stdint.h>                   
 #include <stdbool.h>
 
+#define MAX_BUTTON 4
+
 typedef enum{Menu_Main = 0, Menu_23132}E_Menu_State;
 
 void Menu_Task(void);

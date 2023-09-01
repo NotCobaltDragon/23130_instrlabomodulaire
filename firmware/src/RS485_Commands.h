@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 
+extern const char cmdData[4][4];
+
 //Voltmeter 23132 specific commands
 typedef enum
 {
@@ -18,15 +20,5 @@ typedef enum
 	E_CMD_VOLTMGAIN,
 	E_CMD_VOLTMMODE,
 }E_Command;
-
-//extern const char *cStrings[];
-
-//#define CMD_STRINGS	\
-//	"ERR" \
-//	"ID?" \	//E_CMD_IDQUESTION
-//	"VMG" \	//E_CMD_VOLTMGAIN
-//	"VMM"	//E_CMD_VOLTMMODE
-
-extern const char *cmdStrings[][3];
 
 #endif

@@ -58,6 +58,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdlib.h>
 #include "system_config.h"
 #include "system_definitions.h"
+
 #include "Display.h"
 #include "RS485_Driver.h"
 #include "Menu_Driver.h"
@@ -109,15 +110,19 @@ typedef enum
 
 typedef enum
 {
-	ID_1 = 1,
-	ID_2,
-	ID_3,
-	ID_4,
-	ID_5,
-	ID_6,
-	ID_7,
-} ID_SELECTED;
+	E_ERR_RS485 = 1,
+} ERROR_HANDLER;
 
+//typedef enum
+//{
+//	MODULE_1 = 1,
+//	MODULE_2,
+//	MODULE_3,
+//	MODULE_4,
+//	MODULE_5,
+//	MODULE_6,
+//	MODULE_7,
+//} E_MODULES;
 
 // *****************************************************************************
 /* Application Data
@@ -137,7 +142,7 @@ typedef struct
 	/* The application's current state */
 	APP_STATES state;
 
-	ID_SELECTED idSelected;
+	//E_MODULES idSelected;
 
 	uint32_t mainTimerCount;
 	bool mainTimerDelayHasElapsed;
@@ -153,6 +158,8 @@ typedef struct
 	bool pec12Inc;
 	bool pec12Dec;
 	bool pec12Pb;
+
+	bool testRxTx;
 
 } APP_DATA;
 

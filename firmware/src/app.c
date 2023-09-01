@@ -222,10 +222,10 @@ void APP_Tasks ( void )
 				appData.state = APP_STATE_DISPLAY_CHANGE;
 			}
 
-			if(testCount >= 50)
+			if(testCount >= 20)
 			{
-				SendMessage(E_ID_1, E_CMD_VOLTMMODE, AC_MODE);
-
+				SendMessage(ID_1, E_CMD_VOLTMMODE, voltmeter23132.currentMode);
+				testCount = 0;
 			}
 			break;
 		}

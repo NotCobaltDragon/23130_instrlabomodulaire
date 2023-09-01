@@ -37,7 +37,7 @@
 ///@{
 static T_DISPLAY disp;
 ///@}
-
+extern RS485_DATA rs485Data; //FOR TESTING -> TO DELETE
 /* ************************************************************************** */
 /* ************************************************************************** */
 /** @name Section: Task Callback Routines                                     */
@@ -251,6 +251,31 @@ void DrawHoldMode(bool holdMode, bool selected)
 
 }
 
+void DrawRxTxMode(bool directionMode, bool selected)
+{
+	int foreColor = C_BLACK;
+	int backColor = C_WHITE;
+
+	if(selected)
+	{
+		foreColor = C_WHITE;
+		backColor = C_BLACK;
+	}
+	UG_FillFrame(78, 54, 126, 62, backColor);
+
+	UG_SetBackcolor (backColor);
+	UG_SetForecolor (foreColor);
+	UG_FontSelect (&FONT_6X8);
+	if(directionMode == SENDING)
+	{
+		UG_PutString(78, 55, "SEND");
+	}
+	else
+	{
+		UG_PutString(78, 55, "RECEIVE");
+	}
+}
+
 ///@}
 
 /* ************************************************************************** */
@@ -285,6 +310,7 @@ void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, 
 		DrawMenuIcon(false);
 		DrawCurrentMode(currentMode, false);
 		DrawHoldMode(holdMode, false);
+		DrawRxTxMode(rs485Data.selectedDirection, false);
 		switch(position)
 		{
 			case 0:
@@ -297,6 +323,9 @@ void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, 
 				DrawHoldMode(holdMode, true);
 				break;
 			case 3:
+				DrawRxTxMode(rs485Data.selectedDirection, true);
+				break;
+			default:
 				break;
 		}
 	}
