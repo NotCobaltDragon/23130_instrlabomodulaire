@@ -100,9 +100,9 @@ typedef enum
 	APP_STATE_POWER_ON,
 	APP_STATE_SERVICE_TASKS,
 	APP_STATE_DISPLAY_CHANGE,
+	APP_STATE_SEND_COMMAND,
+	APP_STATE_RECEIVE_COMMAND,
 	APP_STATE_WAIT,
-	APP_STATE_TX,
-	APP_STATE_RX,
 
 	/* TODO: Define states used by the application state machine. */
 
@@ -110,8 +110,10 @@ typedef enum
 
 typedef enum
 {
-	E_ERR_RS485 = 1,
-} ERROR_HANDLER;
+	NO_ERROR = 0,	//NO_ERR means no error
+	ERROR_RS485,	//Error with RS485
+	ERROR_USB,
+} E_ERROR_HANDLER;
 
 //typedef enum
 //{
@@ -150,16 +152,15 @@ typedef struct
 
 	uint8_t currentScreen;
 	uint32_t backlightColor;
+
 	bool needDisplayUpdate;
+	bool needSendCommand;
 
 	uint8_t position;
-	bool selected;
-
-	bool pec12Inc;
-	bool pec12Dec;
-	bool pec12Pb;
 
 	bool testRxTx;
+
+	E_ERROR_HANDLER errorHandler;
 
 } APP_DATA;
 
@@ -254,6 +255,8 @@ void APP_Initialize ( void );
 void APP_Tasks( void );
 
 void VoltmeterInit(void);
+
+void DisplayErrorScreen(E_ERROR_HANDLER error);
 
 void NeedDisplayUpdate(void);
 

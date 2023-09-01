@@ -155,33 +155,53 @@ void APP_Initialize ( void )
 
 uint8_t testCount = 0; //Test for counting, must be removed
 
-void APP_Tasks ( void )
+void APP_Tasks (void)
 {
+	bool isUsartOpened = false;
+
 	if(appData.mainTimerDelayHasElapsed)
 	{
 		appData.mainTimerDelayHasElapsed = false;
 		LED2On();
 		appData.secondsCount++;
-		testCount++;
+		testCount++; //Test for counting, must be removed
 		UpdateDisplayValues();
 	}
 
 	/* Check the application's current state. */
-	switch ( appData.state )
+	switch (appData.state)
 	{
 		/* Application's initial state. */
 		case APP_STATE_INIT:
 		{
-			//Pec12Init();
+			appData.errorHandler = NO_ERROR;
 			DRV_TMR0_Start();
 			DRV_TMR1_Start();
 			DRV_TMR2_Start();
 			appData.mainTimerDelayHasElapsed = false;
-			Init_RS485(SENDING);	
-			
 			DisplayInit();
-			DisplayScreen(DISP_SCR_WELCOME, false);
-			
+
+			//Open USART for RS485
+			isUsartOpened = Init_RS485(SENDING);
+
+			//isUsartOpened = DRV_HANDLE_INVALID; //FOR TESTING ERROR, TO DELETE
+
+			//if(isUsartOpened == DRV_HANDLE_INVALID)
+			//{
+			//	appData.errorHandler = ERROR_RS485;
+			//}
+
+			//appData.errorHandler = ERROR_RS485;
+			//
+			//if(appData.errorHandler != NO_ERROR)
+			//{
+			//	DisplayErrorScreen(appData.errorHandler);
+			//}
+			//else
+			//{
+				DisplayScreen(DISP_SCR_WELCOME, false);
+			//}
+
 			appData.state = APP_STATE_POWER_ON;
 			
 			break;
@@ -202,23 +222,19 @@ void APP_Tasks ( void )
 			Display_Task();
 			Menu_Task();
 
-			if(voltmeter23132.valueVoltmeter < 200)
-			{
-				voltmeter23132.valueVoltmeter += 0.1;
-			}
-			else
-			{
-				voltmeter23132.valueVoltmeter = 0.72;
-			}
-
 			//if(appData.needDisplayUpdate == true)
 			//{
 			//	appData.state = APP_STATE_DISPLAY_CHANGE;
 			//}
 
+			if(appData.needSendCommand == true)
+			{
+				appData.state = APP_STATE_SEND_COMMAND;
+			}
+
 			if(appData.secondsCount >= 15)
 			{
-				//send RS485
+			
 				appData.state = APP_STATE_DISPLAY_CHANGE;
 			}
 
@@ -229,6 +245,11 @@ void APP_Tasks ( void )
 			}
 			break;
 		}
+
+		case APP_STATE_SEND_COMMAND:
+		{
+			SendMessage(ID_1, E_CMD_VOLTMMODE, voltmeter23132.currentMode);
+		} 
 
 		case APP_STATE_DISPLAY_CHANGE:
 		{
@@ -251,11 +272,26 @@ void APP_Tasks ( void )
 	}
 }
 
+void DisplayErrorScreen(E_ERROR_HANDLER error)
+{
+	appData.secondsCount = 0;
+	appData.backlightColor = COL_RED;
+	appData.currentScreen = DISP_SCR_ERROR;
+	DisplayScreen(appData.currentScreen, false);
+	DisplaySetBacklightRGB(appData.backlightColor);
+	while(1){}	//Error detected, must reset main module
+}
+
 void VoltmeterInit()
 {
 	voltmeter23132.currentMode = DC_MODE;
 	voltmeter23132.holdMode = false;
-	voltmeter23132.valueVoltmeter = 0.72;
+	voltmeter23132.valueVoltmeter = 53.29;
+}
+
+void NeedSendCommand(E_ID_MODULES id, E_Command command, uint8_t parameter)
+{
+
 }
 
 void NeedDisplayUpdate()

@@ -78,7 +78,7 @@ extern "C" {
 #define COL_YELLOW_CUSTOM       0xFF8A00
 #define COL_PINK_CUSTOM         0xFF004B
 
-#define COL_DEFAULT             COL_AQUA
+#define COL_DEFAULT             COL_WHITE
   
  /** @name Timing */
 #define DISPLAY_REFRESH_PERIOD  20      //in 10 ms units
@@ -95,6 +95,7 @@ typedef enum{
 	DISP_SCR_WELCOME=0,             ///< ecran d'accueil
 			/* Liste des ecrans */
 			DISP_SCR_MAIN_MENU,          ///< page ecran no ...
+			DISP_SCR_ERROR,
 			DISP_SCR_23132,
 			DISP_SCR_LAST
 } E_DISPLAY_SCREENS;
@@ -189,6 +190,8 @@ void DisplayScrollClear();
  * Texec = 245 us
  */
 void DisplayClear(bool setToClear);
+
+void DisplayScreen_Error(void);
 
 /* ----------------------------------------------------------------------------*/
 /**

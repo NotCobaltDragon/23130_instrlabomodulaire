@@ -43,8 +43,6 @@ typedef struct
 	uint8_t parameter;
 } S_TX_CARRIER;
 
-
-
 bool Init_RS485(bool defaultMode);
 
 void SendMessage(E_ID_MODULES id, E_Command command, uint8_t parameter);

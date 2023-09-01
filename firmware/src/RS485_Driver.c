@@ -20,7 +20,6 @@ S_TX_CARRIER txCarrier;
 bool Init_RS485(bool defaultMode)
 {
 	bool isUsartOpened;
-	//Init
 
 	RS485_Direction_Mode(defaultMode);
 	rs485Data.selectedDirection = defaultMode;
@@ -35,7 +34,7 @@ bool Init_RS485(bool defaultMode)
 		isUsartOpened = true;
 	}
 
-	return isUsartOpened;
+	return rs485Data.usartHandle;
 }
 
 void SendMessage(E_ID_MODULES id, E_Command command, uint8_t parameter)
@@ -45,20 +44,10 @@ void SendMessage(E_ID_MODULES id, E_Command command, uint8_t parameter)
 	int nbByteWritten;
 	uint8_t sizeString = 0;
 	uint8_t bufferSize = strlen(sendString);
-	//const char testString[4][4]=
-	//{
-	//	"ERR",
-	//	"ID?",	//E_CMD_IDQUESTION
-	//	"VMG",	//E_CMD_VOLTMGAIN
-	//	"VMM"	//E_CMD_VOLTMMODE
-	//};
-	//strcpy(cmdString, cmdData[command][0]);
-    //memcpy(cmdString, cmdData[command], strlen(cmdData)+1);
-    //sprintf(sendString, "ID%s", cmdData[command]);
-	sprintf(sendString, "ID%d%s%d", id, cmdData[command], parameter);
-	bufferSize = strlen(sendString);
 
-	LED1Toggle();
+	sprintf(sendString, "ID%d%s%d", id, cmdData[command], parameter);
+
+	bufferSize = strlen(sendString);
 
 	while(sizeString < bufferSize)
 	{

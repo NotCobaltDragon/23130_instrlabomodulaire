@@ -22,6 +22,14 @@ typedef struct
     CHANNEL sigA;
     CHANNEL sigB;
     CHANNEL sigPB;
+
+    //bool pec12Inc;
+    //bool pec12Dec;
+    //bool pec12Pb;
+
+    bool stateInc;
+    bool stateDec;
+    bool statePb;
 } PEC12;
 
 void ScanPec12();

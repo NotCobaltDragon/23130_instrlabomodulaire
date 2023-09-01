@@ -143,12 +143,39 @@ static void DisplayScreen_Welcome(bool setToDark){
 
 /* -------------------------------------------------------------------------- */
 /**
- * @brief   Displays Screen Nr n
+ * @brief   Displays the error screen
  * 
  * @param   setToDark   true = dark ; false = clear
  * 
  */
-/*static*/ void DisplayScreen_23132(bool setToDark)
+void DisplayScreen_Error()
+{	
+	DisplayClear(true);
+	UG_SetBackcolor (C_BLACK);
+	UG_SetForecolor (C_WHITE);
+	UG_FillFrame(0, 0, 127, 63, C_BLACK);
+	UG_FontSetHSpace(0);
+	UG_FontSelect (&FONT_6X8);
+	UG_PutString(1, 2, "ERROR !!!");
+	UG_DrawFrame(0, 0, 127, 63, C_WHITE);
+	UG_DrawLine(0, 10, 127, 10, C_WHITE);
+	UG_FillCircle(21, 35, 25, C_WHITE);
+	UG_FontSelect(&FONT_22X36);
+	UG_PutString(35, 24, "UART Error");
+	//UG_DrawLine(0, 53, 127, 53, C_BLACK);
+	//UG_DrawLine(32, 63, 32, 53, C_BLACK);
+	//UG_DrawLine(62, 63, 62, 53, C_BLACK);
+	//UG_DrawLine(77, 63, 77, 53, C_BLACK);
+}
+
+/* -------------------------------------------------------------------------- */
+/**
+ * @brief   Displays Screen Voltmeter 23132
+ * 
+ * @param   setToDark   true = dark ; false = clear
+ * 
+ */
+void DisplayScreen_23132(bool setToDark)
 {
 	if (setToDark){
 		UG_SetBackcolor (C_WHITE);
@@ -303,7 +330,6 @@ void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, 
 			UG_FontSelect(&FONT_16X26);
 			UG_SetBackcolor (C_WHITE);
 			UG_SetForecolor (C_BLACK);
-			//sprintf(str, "%d", position);
 			sprintf(str, "%2.2f", voltmeterValue);
 			UG_PutString(3, 17, str);
 		}
@@ -391,11 +417,13 @@ void DisplayScreen(uint8_t screen, bool setToDark){
 	disp.currentScreenNr = screen;
 	DisplayClear(true);
 
-	switch (screen)
+	switch(screen)
 	{
 		case DISP_SCR_WELCOME:
 			DisplayScreen_Welcome(true);            
 			break;
+		case DISP_SCR_ERROR:
+			DisplayScreen_Error();
 		case DISP_SCR_23132:
 			DisplayScreen_23132(true);
 			break;

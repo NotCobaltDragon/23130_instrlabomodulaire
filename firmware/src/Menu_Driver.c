@@ -7,14 +7,19 @@
 //-----------------------------------------------------------
 #include "Menu_Driver.h"
 
+
+//TEMPORARY FOR DEBUG
 #include "RS485_Driver.h"
 
 
 E_Menu_State menuState = Menu_23132;
 
 extern APP_DATA appData;
+extern PEC12 pec12;
 extern VOLTMETER_23132 voltmeter23132;
+
 extern RS485_DATA rs485Data;
+
 
 void Menu_Task()
 {
@@ -24,21 +29,21 @@ void Menu_Task()
 			break;
 		case Menu_23132:
 		{
-			if(appData.pec12Inc == true)
+			if(pec12.stateInc == true)
 			{
 				NeedDisplayUpdate();
 				if(appData.position != (MAX_BUTTON - 1))
 					appData.position++;
 				Pec12IncClear();
 			}
-			else if(appData.pec12Dec == true)
+			else if(pec12.stateDec == true)
 			{
 				NeedDisplayUpdate();
 				if(appData.position != 0)
 					appData.position--;
 				Pec12DecClear();
 			}
-			else if(appData.pec12Pb == true)
+			else if(pec12.statePb == true)
 			{
 				NeedDisplayUpdate();
 				switch(appData.position)

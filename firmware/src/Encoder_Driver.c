@@ -8,7 +8,7 @@
 #include "Encoder_Driver.h"
 
 PEC12 pec12;
-extern APP_DATA appData;
+//extern APP_DATA appData;
 
 void ScanPec12()
 {
@@ -33,36 +33,36 @@ void ScanPec12()
 
 void Pec12IncSet()
 {
-	if(appData.pec12Inc != true)
-		appData.pec12Inc = true;
+	if(pec12.stateInc != true)
+		pec12.stateInc = true;
 		LED1Toggle();
 }
 
 void Pec12DecSet()
 {
-	if(appData.pec12Dec != true)
-		appData.pec12Dec = true;
+	if(pec12.stateDec != true)
+		pec12.stateDec = true;
 		LED1Toggle();
 }
 
 void Pec12PbSet()
 {
-	if(appData.pec12Pb != true)
-		appData.pec12Pb = true;
+	if(pec12.statePb != true)
+		pec12.statePb = true;
 		LED1Toggle();
 }
 
 void Pec12IncClear()
 {
-	appData.pec12Inc = false;
+	pec12.stateInc = false;
 }
 
 void Pec12DecClear()
 {
-	appData.pec12Dec = false;
+	pec12.stateDec = false;
 }
 
 void Pec12PbClear()
 {
-	appData.pec12Pb = false;
+	pec12.statePb = false;
 }
