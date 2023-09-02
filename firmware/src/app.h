@@ -115,16 +115,16 @@ typedef enum
 	ERROR_USB,
 } E_ERROR_HANDLER;
 
-//typedef enum
-//{
-//	MODULE_1 = 1,
-//	MODULE_2,
-//	MODULE_3,
-//	MODULE_4,
-//	MODULE_5,
-//	MODULE_6,
-//	MODULE_7,
-//} E_MODULES;
+typedef enum
+{
+	MODULE_1 = 1,
+	MODULE_2,
+	MODULE_3,
+	MODULE_4,
+	MODULE_5,
+	MODULE_6,
+	MODULE_7,
+} E_MODULES_ID;
 
 // *****************************************************************************
 /* Application Data
@@ -155,8 +155,11 @@ typedef struct
 
 	bool needDisplayUpdate;
 	bool needSendCommand;
+	bool expectingResponse;
 
-	uint8_t position;
+	uint32_t responseTimeoutCounter;
+
+	uint8_t positionCursor;
 
 	bool testRxTx;
 
@@ -164,14 +167,24 @@ typedef struct
 
 } APP_DATA;
 
+typedef enum
+{
+	EMPTY = 0,
+	MODULE_23132,
+}E_MODULE_MODEL;
+
+typedef struct
+{
+	E_MODULE_ID id;
+	E_MODULE_MODEL model;
+} MODULE_SLOT_DATA;
+
 typedef struct
 {
 	float valueVoltmeter;
 	bool currentMode;
 	bool holdMode;
 } VOLTMETER_23132;
-
-
 
 // *****************************************************************************
 // *****************************************************************************

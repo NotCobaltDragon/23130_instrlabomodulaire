@@ -93,11 +93,11 @@ extern "C" {
 /** @name Liste des ecrans a afficher */
 typedef enum{
 	DISP_SCR_WELCOME=0,             ///< ecran d'accueil
-			/* Liste des ecrans */
-			DISP_SCR_MAIN_MENU,          ///< page ecran no ...
-			DISP_SCR_ERROR,
-			DISP_SCR_23132,
-			DISP_SCR_LAST
+	/* Liste des ecrans */
+	DISP_SCR_MAIN_MENU,          ///< page ecran no ...
+	DISP_SCR_ERROR,
+	DISP_SCR_23132,
+	DISP_SCR_LAST
 } E_DISPLAY_SCREENS;
 
 /** @name Liste de commandes d'affichage */
@@ -202,7 +202,7 @@ void DisplayScreen_Error(void);
  * @param  b    valeur b
  * @param  c    valeur c 
  */
-void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position);
+void DisplayValues_23132(uint8_t id, float voltmeterValue, bool currentMode, bool holdMode, uint8_t position);
 
 //void DrawMenuIcon(bool selected);
 

@@ -9,6 +9,7 @@
 #define MENU_DRIVER_H
 
 #include "app.h"
+#include "Display.h"
 #include "Encoder_Driver.h"
 #include <stdint.h>                   
 #include <stdbool.h>
@@ -17,7 +18,7 @@
 
 typedef enum{Menu_Main = 0, Menu_23132}E_Menu_State;
 
-void Menu_Task(void);
+void Menu_Task(E_Menu_State menuState);
 
 
 #endif

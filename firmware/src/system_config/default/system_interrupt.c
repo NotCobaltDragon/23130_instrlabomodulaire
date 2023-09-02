@@ -96,7 +96,8 @@ void __ISR(_TIMER_3_VECTOR, ipl5AUTO) IntHandlerDrvTmrInstance1(void)
 void __ISR(_TIMER_2_VECTOR, ipl2AUTO) IntHandlerDrvTmrInstance2(void)
 {
 	ScanPec12();
-    PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_2);
+	ResponseTimeout();
+	PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_2);
 }
  
 

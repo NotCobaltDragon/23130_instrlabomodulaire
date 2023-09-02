@@ -78,6 +78,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 APP_DATA appData;
 
+MODULE_SLOT_DATA slotData[7];
+
 VOLTMETER_23132 voltmeter23132;
 
 // *****************************************************************************
@@ -96,16 +98,6 @@ void APP_MainTimerCallback()
 	LED2Off();
 }
 
-void APP_Uart1Callback()
-{
-
-}
-
-void APP_Uart2Callback()
-{
-
-}
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Local Functions
@@ -114,7 +106,7 @@ void APP_Uart2Callback()
 void UpdateDisplayValues()
 {
 	//updates display values
-	DisplayValues_23132(voltmeter23132.valueVoltmeter, voltmeter23132.currentMode, voltmeter23132.holdMode, appData.position);
+	DisplayValues_23132(voltmeter23132.id, voltmeter23132.valueVoltmeter, voltmeter23132.currentMode, voltmeter23132.holdMode, appData.positionCursor);
 }
 
 // *****************************************************************************
@@ -141,7 +133,7 @@ void APP_Initialize ( void )
 	appData.secondsCount = 0;
 	appData.currentScreen = DISP_SCR_WELCOME;
 	appData.backlightColor = COL_WHITE;
-	appData.position = 0;
+	appData.positionCursor = 0;
 }
 
 
@@ -210,6 +202,9 @@ void APP_Tasks (void)
 		case APP_STATE_POWER_ON:
 		{
 			//TODO: Function for reseting all modules (RST1...RST7)
+
+			NeedSendCommand(MODULE_1, )
+
 			VoltmeterInit();
 			NeedDisplayUpdate();
 			appData.state = APP_STATE_SERVICE_TASKS;	
@@ -218,23 +213,28 @@ void APP_Tasks (void)
 
 		case APP_STATE_SERVICE_TASKS:
 		{
-			
 			Display_Task();
-			Menu_Task();
+			Menu_Task(appData.currentScreen);
 
-			//if(appData.needDisplayUpdate == true)
-			//{
-			//	appData.state = APP_STATE_DISPLAY_CHANGE;
-			//}
-
+			
+			
 			if(appData.needSendCommand == true)
 			{
 				appData.state = APP_STATE_SEND_COMMAND;
 			}
-
-			if(appData.secondsCount >= 15)
+			else if(appData.expectingResponse == true)
 			{
-			
+				appData.state = APP_STATE_RECEIVE_COMMAND;
+			}
+
+			//if(appData.secondsCount >= 15)
+			//{
+			//
+			//	appData.state = APP_STATE_DISPLAY_CHANGE;
+			//}
+
+			if(appData.needDisplayUpdate == true)
+			{
 				appData.state = APP_STATE_DISPLAY_CHANGE;
 			}
 
@@ -248,8 +248,16 @@ void APP_Tasks (void)
 
 		case APP_STATE_SEND_COMMAND:
 		{
-			SendMessage(ID_1, E_CMD_VOLTMMODE, voltmeter23132.currentMode);
-		} 
+			SendMessage(rs485Data.id, rs485Data.command, rs485Data.parameter);
+
+
+			appData.expectingResponse = true;
+			break;
+		}
+		case APP_STATE_RECEIVE_COMMAND:
+		{
+			//GetMessage();
+		}
 
 		case APP_STATE_DISPLAY_CHANGE:
 		{
@@ -284,14 +292,18 @@ void DisplayErrorScreen(E_ERROR_HANDLER error)
 
 void VoltmeterInit()
 {
+	voltmeter23132.id = ID_1;
 	voltmeter23132.currentMode = DC_MODE;
 	voltmeter23132.holdMode = false;
 	voltmeter23132.valueVoltmeter = 53.29;
 }
 
-void NeedSendCommand(E_ID_MODULES id, E_Command command, uint8_t parameter)
+void NeedSendCommand(E_MODULES id, E_Command command, uint8_t parameter)
 {
-
+	appData.needSendCommand = true;
+	rs485Data.id = id;
+	rs485Data.command = command;
+	rs485Data.parameter = parameter;
 }
 
 void NeedDisplayUpdate()

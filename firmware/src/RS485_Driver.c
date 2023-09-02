@@ -13,10 +13,6 @@
 
 RS485_DATA rs485Data;
 
-S_TX_CARRIER txCarrier;
-
-//const char cmdStrings[][4];
-
 bool Init_RS485(bool defaultMode)
 {
 	bool isUsartOpened;
@@ -37,7 +33,7 @@ bool Init_RS485(bool defaultMode)
 	return rs485Data.usartHandle;
 }
 
-void SendMessage(E_ID_MODULES id, E_Command command, uint8_t parameter)
+void SendMessage(uint8_t id, E_Command command, uint8_t parameter)
 {
 	char sendString[10];
 	char cmdString[4];
@@ -60,10 +56,20 @@ void SendMessage(E_ID_MODULES id, E_Command command, uint8_t parameter)
 
 int GetMessage()
 {
-	int commStatus = 0;
+	static char receptionBuffer[10];
 
+	nbByteReceived = 0;
 
-	return commStatus;
+	do
+	{
+		if(DRV_USART_TRANSFER_STATUS_RECEIVER_DATA_PRESENT & DRV_USART_TransferStatus(rs485Data.usartHandle))
+		{
+			receptionBuffer[nbByteReceived++] = DRV_USART0_ReadByte(rs485Data.usartHandle);
+		}
+		
+	//Manage TIMEOUT
+
+	}while((nbByteReceived < 10)&&(isResponseTimeoutReached == false));
 }
 
 

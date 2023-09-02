@@ -319,7 +319,7 @@ void DrawRxTxMode(bool directionMode, bool selected)
  * @param  a    valeur a 
  */
 //void DisplayValues_23132(uint8_t position, float voltmeterValue, bool currentMode, bool hold)
-void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position)
+void DisplayValues_23132(uint8_t id, float voltmeterValue, bool currentMode, bool holdMode, uint8_t position)
 {
 	char str[7] = "test";
 
