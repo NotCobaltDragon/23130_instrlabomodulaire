@@ -13,6 +13,8 @@
 
 extern const char cmdData[4][4];
 
+extern const char nameModulesData[2][12];	//11 is the maximum characters on screen + 1
+
 //Voltmeter 23132 specific commands
 typedef enum
 {

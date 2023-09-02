@@ -18,7 +18,7 @@
 
 typedef enum{Menu_Main = 0, Menu_23132}E_Menu_State;
 
-void Menu_Task(E_Menu_State menuState);
+void Menu_Task(void);
 
 
 #endif

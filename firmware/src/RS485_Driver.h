@@ -43,7 +43,7 @@ typedef struct
 
 bool Init_RS485(bool defaultMode);
 
-void SendMessage(uint8_t id, E_Command command, uint8_t parameter);
+bool SendMessage(uint8_t id, E_Command command, uint8_t parameter);
 
 void RS485_Direction_Mode(bool directionMode);
 

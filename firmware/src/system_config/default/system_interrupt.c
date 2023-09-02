@@ -62,6 +62,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system/common/sys_common.h"
 #include "app.h"
 #include "Encoder_Driver.h"
+#include "RS485_Driver.h"
 #include "system_definitions.h"
 
 extern APP_DATA	appData;
@@ -96,7 +97,7 @@ void __ISR(_TIMER_3_VECTOR, ipl5AUTO) IntHandlerDrvTmrInstance1(void)
 void __ISR(_TIMER_2_VECTOR, ipl2AUTO) IntHandlerDrvTmrInstance2(void)
 {
 	ScanPec12();
-	ResponseTimeout();
+	//ResponseTimeout();
 	PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_2);
 }
  

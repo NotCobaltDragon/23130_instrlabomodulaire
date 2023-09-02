@@ -40,6 +40,7 @@
 #include "system_definitions.h"
 #include "ugui.h"
 #include "LCD_Driver.h"
+#include "app.h"
 
 /* Provide C++ Compatibility */
 #ifdef __cplusplus
@@ -202,7 +203,7 @@ void DisplayScreen_Error(void);
  * @param  b    valeur b
  * @param  c    valeur c 
  */
-void DisplayValues_23132(uint8_t id, float voltmeterValue, bool currentMode, bool holdMode, uint8_t position);
+void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position);
 
 //void DrawMenuIcon(bool selected);
 

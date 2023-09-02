@@ -124,7 +124,7 @@ typedef enum
 	MODULE_5,
 	MODULE_6,
 	MODULE_7,
-} E_MODULES_ID;
+} E_MODULE_ID;
 
 // *****************************************************************************
 /* Application Data
@@ -160,8 +160,11 @@ typedef struct
 	uint32_t responseTimeoutCounter;
 
 	uint8_t positionCursor;
+	uint8_t positionList;
 
-	bool testRxTx;
+	bool isUsartOpened;
+
+	E_MODULE_ID moduleSelected;
 
 	E_ERROR_HANDLER errorHandler;
 

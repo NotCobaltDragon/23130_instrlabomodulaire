@@ -33,8 +33,9 @@ bool Init_RS485(bool defaultMode)
 	return rs485Data.usartHandle;
 }
 
-void SendMessage(uint8_t id, E_Command command, uint8_t parameter)
+bool SendMessage(uint8_t id, E_Command command, uint8_t parameter)
 {
+	bool needSendCommand = true; 
 	char sendString[10];
 	char cmdString[4];
 	int nbByteWritten;
@@ -52,24 +53,29 @@ void SendMessage(uint8_t id, E_Command command, uint8_t parameter)
 			DRV_USART_WriteByte(rs485Data.usartHandle, sendString[sizeString++]);
 		}
 	}
+	needSendCommand = false;
+	return needSendCommand;
 }
 
 int GetMessage()
 {
 	static char receptionBuffer[10];
+	rs485Data.isResponseTimeoutReached = false;
 
-	nbByteReceived = 0;
+	int nbByteReceived = 0;
 
 	do
 	{
 		if(DRV_USART_TRANSFER_STATUS_RECEIVER_DATA_PRESENT & DRV_USART_TransferStatus(rs485Data.usartHandle))
 		{
-			receptionBuffer[nbByteReceived++] = DRV_USART0_ReadByte(rs485Data.usartHandle);
+			receptionBuffer[nbByteReceived] = DRV_USART_ReadByte(rs485Data.usartHandle);
+			nbByteReceived++;
 		}
-		
+
 	//Manage TIMEOUT
 
-	}while((nbByteReceived < 10)&&(isResponseTimeoutReached == false));
+	}while((nbByteReceived < 10)&&(rs485Data.isResponseTimeoutReached == false));
+    LED1Toggle();
 }
 
 

@@ -14,3 +14,9 @@ const char cmdData[4][4] =
 	"VMG",	//E_CMD_VOLTMGAIN
 	"VMM",	//E_CMD_VOLTMMODE
 };
+
+const char nameModulesData[2][12] =	//11 is the maximum characters on screen + 1
+{
+	"Not mounted",
+	"Voltmeter",
+};

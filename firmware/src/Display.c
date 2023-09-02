@@ -37,6 +37,8 @@
 ///@{
 static T_DISPLAY disp;
 ///@}
+extern MODULE_SLOT_DATA slotData[7];
+
 extern RS485_DATA rs485Data; //FOR TESTING -> TO DELETE
 /* ************************************************************************** */
 /* ************************************************************************** */
@@ -168,6 +170,24 @@ void DisplayScreen_Error()
 	//UG_DrawLine(77, 63, 77, 53, C_BLACK);
 }
 
+void DisplayScreen_MainMenu(bool setToDark)
+{
+	if (setToDark){
+		UG_SetBackcolor (C_WHITE);
+		UG_SetForecolor (C_BLACK);
+	} else { 
+		UG_SetBackcolor (C_BLACK);
+		UG_SetForecolor (C_WHITE);
+	}
+	UG_FontSetHSpace(0);
+	UG_FontSelect (&FONT_6X8);
+	UG_PutString(1, 2, "Main Menu");
+	UG_DrawFrame(0, 0, 127, 63, C_BLACK);
+	UG_DrawLine(0, 10, 127, 10, C_BLACK);
+	UG_DrawLine(6, 28, 121, 28, C_BLACK);
+	UG_DrawLine(6, 45, 121, 45, C_BLACK);
+}
+
 /* -------------------------------------------------------------------------- */
 /**
  * @brief   Displays Screen Voltmeter 23132
@@ -270,12 +290,10 @@ void DrawHoldMode(bool holdMode, bool selected)
 		UG_DrawLine(68, 55, 69, 57, foreColor);
 		UG_DrawLine(67, 55, 66, 57, foreColor);
 	}
-	
 	/*UG_SetBackcolor (backColor);
 	UG_SetForecolor (foreColor);
 	UG_FontSelect (&FONT_6X8);
 	UG_PutString(66, 55, "HOLD");*/
-
 }
 
 void DrawRxTxMode(bool directionMode, bool selected)
@@ -310,6 +328,47 @@ void DrawRxTxMode(bool directionMode, bool selected)
 /** @name Section: Interface Functions                                        */
 /* ************************************************************************** */
 /* ************************************************************************** */
+
+
+void DisplayValues_MainMenu(uint8_t positionList, uint8_t positionCursor, uint8_t moduleA, uint8_t moduleB, uint8_t moduleC)
+{
+	char slotA[20];
+	char slotB[20];
+	char slotC[20];
+
+
+	if(disp.currentScreenNr == DISP_SCR_MAIN_MENU)
+	{
+		sprintf(slotA, "Slot %d: %s", (positionList+1), nameModulesData[moduleA]);
+		sprintf(slotB, "Slot %d: %s", (positionList+2), nameModulesData[moduleB]);
+		sprintf(slotC, "Slot %d: %s", (positionList+3), nameModulesData[moduleC]);
+
+		UG_FontSelect(&FONT_6X8);
+		UG_PutString(6, 16, slotA);
+		UG_PutString(6, 33, slotB);
+		UG_PutString(6, 50, slotC);
+		UG_FillFrame(1, 11, 5, 62, C_WHITE);
+
+		switch(positionCursor)
+		{
+			case 0:
+				UG_DrawLine(2, 18, 4, 20, C_BLACK);	//TODO: Function for arrow
+				UG_DrawLine(2, 22, 4, 20, C_BLACK);
+				break;
+			case 1:
+				UG_DrawLine(2, 35, 4, 37, C_BLACK);
+				UG_DrawLine(2, 39, 4, 37, C_BLACK);
+				break;
+			case 2:
+				UG_DrawLine(2, 52, 4, 54, C_BLACK);
+				UG_DrawLine(2, 56, 4, 54, C_BLACK);
+				break;
+			default:
+				break;
+		}
+	}
+}
+
 ///@{
 /* ----------------------------------------------------------------------------*/
 /**
@@ -318,10 +377,9 @@ void DrawRxTxMode(bool directionMode, bool selected)
  * 
  * @param  a    valeur a 
  */
-//void DisplayValues_23132(uint8_t position, float voltmeterValue, bool currentMode, bool hold)
-void DisplayValues_23132(uint8_t id, float voltmeterValue, bool currentMode, bool holdMode, uint8_t position)
+void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position)
 {
-	char str[7] = "test";
+	char str[7];
 
 	if(disp.currentScreenNr == DISP_SCR_23132)
 	{
@@ -356,9 +414,6 @@ void DisplayValues_23132(uint8_t id, float voltmeterValue, bool currentMode, boo
 		}
 	}
 }   /* DisplayValues_23132 */
-
-
-
 
 /* -------------------------------------------------------------------------- */
 /**
@@ -424,6 +479,10 @@ void DisplayScreen(uint8_t screen, bool setToDark){
 			break;
 		case DISP_SCR_ERROR:
 			DisplayScreen_Error();
+			break;
+		case DISP_SCR_MAIN_MENU:
+			DisplayScreen_MainMenu(true);
+			break;
 		case DISP_SCR_23132:
 			DisplayScreen_23132(true);
 			break;

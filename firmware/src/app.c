@@ -82,6 +82,8 @@ MODULE_SLOT_DATA slotData[7];
 
 VOLTMETER_23132 voltmeter23132;
 
+extern RS485_DATA rs485Data;
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Functions
@@ -106,7 +108,8 @@ void APP_MainTimerCallback()
 void UpdateDisplayValues()
 {
 	//updates display values
-	DisplayValues_23132(voltmeter23132.id, voltmeter23132.valueVoltmeter, voltmeter23132.currentMode, voltmeter23132.holdMode, appData.positionCursor);
+	DisplayValues_MainMenu(appData.positionList, appData.positionCursor, slotData[appData.positionList].model, slotData[appData.positionList+1].model, slotData[appData.positionList+1].model);
+	DisplayValues_23132(voltmeter23132.valueVoltmeter, voltmeter23132.currentMode, voltmeter23132.holdMode, appData.positionCursor);
 }
 
 // *****************************************************************************
@@ -134,6 +137,7 @@ void APP_Initialize ( void )
 	appData.currentScreen = DISP_SCR_WELCOME;
 	appData.backlightColor = COL_WHITE;
 	appData.positionCursor = 0;
+	appData.positionList = 0;
 }
 
 
@@ -149,8 +153,6 @@ uint8_t testCount = 0; //Test for counting, must be removed
 
 void APP_Tasks (void)
 {
-	bool isUsartOpened = false;
-
 	if(appData.mainTimerDelayHasElapsed)
 	{
 		appData.mainTimerDelayHasElapsed = false;
@@ -174,25 +176,7 @@ void APP_Tasks (void)
 			DisplayInit();
 
 			//Open USART for RS485
-			isUsartOpened = Init_RS485(SENDING);
-
-			//isUsartOpened = DRV_HANDLE_INVALID; //FOR TESTING ERROR, TO DELETE
-
-			//if(isUsartOpened == DRV_HANDLE_INVALID)
-			//{
-			//	appData.errorHandler = ERROR_RS485;
-			//}
-
-			//appData.errorHandler = ERROR_RS485;
-			//
-			//if(appData.errorHandler != NO_ERROR)
-			//{
-			//	DisplayErrorScreen(appData.errorHandler);
-			//}
-			//else
-			//{
-				DisplayScreen(DISP_SCR_WELCOME, false);
-			//}
+			appData.isUsartOpened = Init_RS485(SENDING);
 
 			appData.state = APP_STATE_POWER_ON;
 			
@@ -203,21 +187,33 @@ void APP_Tasks (void)
 		{
 			//TODO: Function for reseting all modules (RST1...RST7)
 
-			NeedSendCommand(MODULE_1, )
+			//NeedSendCommand(MODULE_1, E_CMD_IDQUESTION, 0);
+
+			//FOR TESTING, REPLACE BY DATA COLLECTED AT INIT
+			slotData[0].model = MODULE_23132;
+			slotData[0].id = MODULE_1;
+			//slotData[2].model = MODULE_23132;
+			//slotData[2].model = EMPTY;
+			//slotData[3].model = EMPTY;
+			//slotData[4].model = EMPTY;
+			//slotData[5].model = EMPTY;
+			//slotData[6].model = EMPTY;
+
+			appData.currentScreen = DISP_SCR_MAIN_MENU;
+
+			//END CODE TESTING
 
 			VoltmeterInit();
-			NeedDisplayUpdate();
-			appData.state = APP_STATE_SERVICE_TASKS;	
+			appData.state = APP_STATE_DISPLAY_CHANGE;
+			//appData.state = APP_STATE_SERVICE_TASKS;	
 			break;
 		}
 
 		case APP_STATE_SERVICE_TASKS:
 		{
 			Display_Task();
-			Menu_Task(appData.currentScreen);
+			Menu_Task();
 
-			
-			
 			if(appData.needSendCommand == true)
 			{
 				appData.state = APP_STATE_SEND_COMMAND;
@@ -230,7 +226,8 @@ void APP_Tasks (void)
 			//if(appData.secondsCount >= 15)
 			//{
 			//
-			//	appData.state = APP_STATE_DISPLAY_CHANGE;
+			//	appData.currentScreen = DISP_SCR_MAIN_MENU;
+			//	NeedDisplayUpdate();
 			//}
 
 			if(appData.needDisplayUpdate == true)
@@ -238,32 +235,32 @@ void APP_Tasks (void)
 				appData.state = APP_STATE_DISPLAY_CHANGE;
 			}
 
-			if(testCount >= 20)
-			{
-				SendMessage(ID_1, E_CMD_VOLTMMODE, voltmeter23132.currentMode);
-				testCount = 0;
-			}
+			//if(testCount >= 20)
+			//{
+			//	SendMessage(MODULE_1, E_CMD_VOLTMMODE, voltmeter23132.currentMode);
+			//	testCount = 0;
+			//}
 			break;
 		}
 
 		case APP_STATE_SEND_COMMAND:
 		{
-			SendMessage(rs485Data.id, rs485Data.command, rs485Data.parameter);
-
-
+			appData.needSendCommand = SendMessage(rs485Data.id, rs485Data.command, rs485Data.parameter);
+			RS485_Direction_Mode(RECEIVING);
 			appData.expectingResponse = true;
 			break;
 		}
 		case APP_STATE_RECEIVE_COMMAND:
 		{
 			//GetMessage();
+			RS485_Direction_Mode(SENDING);
+			appData.state = APP_STATE_SERVICE_TASKS;
 		}
 
 		case APP_STATE_DISPLAY_CHANGE:
 		{
 			appData.needDisplayUpdate = false;
 			appData.secondsCount = 0;
-			appData.currentScreen = DISP_SCR_23132;
 			DisplayScreen(appData.currentScreen, false);
 			UpdateDisplayValues();
 			DisplaySetBacklightRGB(appData.backlightColor);
@@ -292,13 +289,12 @@ void DisplayErrorScreen(E_ERROR_HANDLER error)
 
 void VoltmeterInit()
 {
-	voltmeter23132.id = ID_1;
 	voltmeter23132.currentMode = DC_MODE;
 	voltmeter23132.holdMode = false;
 	voltmeter23132.valueVoltmeter = 53.29;
 }
 
-void NeedSendCommand(E_MODULES id, E_Command command, uint8_t parameter)
+void NeedSendCommand(E_MODULE_ID id, E_Command command, uint8_t parameter)
 {
 	appData.needSendCommand = true;
 	rs485Data.id = id;
@@ -310,6 +306,11 @@ void NeedDisplayUpdate()
 {
 	appData.needDisplayUpdate = true;
 }
+
+//void Menu_Update(E_MODULE_MODEL model)
+//{
+//	
+//}
 
 /*******************************************************************************
  End of File
