@@ -61,6 +61,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #include "Display.h"
 #include "RS485_Driver.h"
+#include "RS485_Commands.h"
 #include "Menu_Driver.h"
 
 // DOM-IGNORE-BEGIN
@@ -275,6 +276,8 @@ void VoltmeterInit(void);
 void DisplayErrorScreen(E_ERROR_HANDLER error);
 
 void NeedDisplayUpdate(void);
+
+void NeedSendCommand(E_MODULE_ID id, E_Command command, uint8_t parameter);
 
 #endif /* _APP_H */
 

@@ -19,16 +19,23 @@
 #define SENDING false
 #define RECEIVING true
 
-//typedef enum
-//{
-//	ID_1 = 1,
-//	ID_2,
-//	ID_3,
-//	ID_4,
-//	ID_5,
-//	ID_6,
-//	ID_7,
-//}E_ID_MODULES;
+typedef enum
+{
+	ID_1 = 1,
+	ID_2,
+	ID_3,
+	ID_4,
+	ID_5,
+	ID_6,
+	ID_7,
+}E_ID_MODULES;
+
+typedef enum
+{
+	CMD_CORRECT = 0,
+	CMD_NOT_RECEIVED,
+	CMD_WRONG,
+}E_PARSE_USART;
 
 typedef struct
 {
@@ -36,14 +43,20 @@ typedef struct
 	bool selectedDirection;
 	bool isResponseTimeoutReached;
 
-	uint8_t id;
+	char receivedMessage[20];
+
+	E_ID_MODULES id;
 	E_Command command;
 	uint8_t parameter;
 }RS485_DATA;
 
 bool Init_RS485(bool defaultMode);
 
-bool SendMessage(uint8_t id, E_Command command, uint8_t parameter);
+bool SendMessage(char txBuffer[8]);
+
+char GetMessage(char rxBuffer[]);
+
+//uint8_t parseUSARTMessage(char *receivedMessage, E_ID_MODULES correctId, E_Command correctCommand, float correctParameter);
 
 void RS485_Direction_Mode(bool directionMode);
 

@@ -21,6 +21,7 @@ bool Init_RS485(bool defaultMode)
 	rs485Data.selectedDirection = defaultMode;
 
 	rs485Data.usartHandle = DRV_USART_Open(DRV_USART_INDEX_0, DRV_IO_INTENT_NONBLOCKING);
+    
 	if(rs485Data.usartHandle == DRV_HANDLE_INVALID)
 	{
 		isUsartOpened = false;
@@ -33,33 +34,43 @@ bool Init_RS485(bool defaultMode)
 	return rs485Data.usartHandle;
 }
 
-bool SendMessage(uint8_t id, E_Command command, uint8_t parameter)
+bool SendMessage(char txBuffer[8])
 {
-	bool needSendCommand = true; 
-	char sendString[10];
-	char cmdString[4];
-	int nbByteWritten;
-	uint8_t sizeString = 0;
-	uint8_t bufferSize = strlen(sendString);
+	bool needSendCommand = true;
+	int nbByteWritten = 0;
+	uint8_t bufferSize = strlen(txBuffer);
 
-	sprintf(sendString, "ID%d%s%d", id, cmdData[command], parameter);
-
-	bufferSize = strlen(sendString);
-
-	while(sizeString < bufferSize)
+	while(nbByteWritten < bufferSize)
 	{
-		if(!(DRV_USART_TRANSFER_STATUS_TRANSMIT_FULL & DRV_USART_TransferStatus(rs485Data.usartHandle)) )
-		{
-			DRV_USART_WriteByte(rs485Data.usartHandle, sendString[sizeString++]);
-		}
+		if(!DRV_USART_TransmitBufferIsFull(rs485Data.usartHandle))
+			DRV_USART_WriteByte(rs485Data.usartHandle, txBuffer[nbByteWritten++]);
 	}
+	while(!(DRV_USART_TRANSFER_STATUS_TRANSMIT_EMPTY & DRV_USART_TransferStatus(rs485Data.usartHandle))){}
 	needSendCommand = false;
 	return needSendCommand;
 }
 
-int GetMessage()
+char GetMessage(char rxBuffer[])
 {
-	static char receptionBuffer[10];
+	int nbByteReceived = 0;
+	rs485Data.isResponseTimeoutReached = false;
+
+	do
+	{
+		if(DRV_USART_TRANSFER_STATUS_RECEIVER_DATA_PRESENT & DRV_USART_TransferStatus(rs485Data.usartHandle))
+		{
+			rxBuffer[nbByteReceived++] = DRV_USART_ReadByte(rs485Data.usartHandle);
+		}
+	}while(nbByteReceived < 8);
+	return rxBuffer;
+}
+
+
+
+/*char* GetMessage(char rxBuffer[])
+{
+	char receptionBuffer[10];
+    uint32_t test = 0;
 	rs485Data.isResponseTimeoutReached = false;
 
 	int nbByteReceived = 0;
@@ -68,14 +79,65 @@ int GetMessage()
 	{
 		if(DRV_USART_TRANSFER_STATUS_RECEIVER_DATA_PRESENT & DRV_USART_TransferStatus(rs485Data.usartHandle))
 		{
-			receptionBuffer[nbByteReceived] = DRV_USART_ReadByte(rs485Data.usartHandle);
-			nbByteReceived++;
+			receptionBuffer[nbByteReceived++] = DRV_USART_ReadByte(rs485Data.usartHandle);
+			//nbByteReceived++;
 		}
+        //LED1Toggle();
+        if(0) //Detection of timeout
+        {
+            
+        }
+        
 
 	//Manage TIMEOUT
 
-	}while((nbByteReceived < 10)&&(rs485Data.isResponseTimeoutReached == false));
-    LED1Toggle();
+	}while(nbByteReceived < 6);
+    //&&(rs485Data.isResponseTimeoutReached == false)
+    return receptionBuffer;
+}*/
+
+uint8_t parseUSARTMessage(char rxBuffer[], char txBuffer[])
+{
+	E_ID_MODULES receivedId = 0;
+	E_Command receivedCommand[4];
+	float receivedParameter;
+	uint8_t counter;
+	int compareMarker;
+	E_PARSE_USART returnCode;
+
+
+	if(strncmp(rxBuffer, "ID", 2) == 0 && strlen(rxBuffer) >= 6)
+	{
+		receivedId = rxBuffer[2];
+
+		//strncpy(rxBuffer, (rxBuffer + 3), 3);
+		//receivedCommand[3] = '\0';
+
+		//compareMarker = strncmp(receivedCommand, cmdData[correctCommand], 3);
+
+		if(strncmp(rxBuffer[3], txBuffer[3], 3) != 0)
+		{
+			returnCode = CMD_WRONG;
+		}
+		else
+		{
+			returnCode = CMD_CORRECT;
+		}
+
+		//receivedParameter = receivedMessage[]
+
+		/*for (counter = 7; counter < (strlen(receivedMessage)-1); counter++)
+		{
+
+			receivedParameter += 
+		}*/
+	}
+	else
+	{
+		returnCode = CMD_NOT_RECEIVED;
+	}
+
+	return returnCode;
 }
 
 

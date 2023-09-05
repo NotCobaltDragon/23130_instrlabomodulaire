@@ -10,6 +10,7 @@
 
 //TEMPORARY FOR DEBUG
 #include "RS485_Driver.h"
+#include "RS485_Commands.h"
 
 
 extern APP_DATA appData;
@@ -61,11 +62,13 @@ void Menu_Task()
 					case EMPTY:
 						break;
 					case MODULE_23132:
+					{
 						appData.currentScreen = DISP_SCR_23132;
 						appData.moduleSelected = slotData[appData.positionCursor + appData.positionList].id;
 						appData.positionCursor = 0;
 						appData.positionList = 0;
 						break;
+					}
 					default:
 						break;
 				}

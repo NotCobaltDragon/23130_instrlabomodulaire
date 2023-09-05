@@ -84,6 +84,10 @@ VOLTMETER_23132 voltmeter23132;
 
 extern RS485_DATA rs485Data;
 
+char txBuffer[8];
+char rxBuffer[8];
+uint8_t modulePointer;
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Functions
@@ -185,6 +189,12 @@ void APP_Tasks (void)
 
 		case APP_STATE_POWER_ON:
 		{
+			for(modulePointer = 1 ; modulePointer < sizeof(slotData.id); modulePointer++)
+			{
+				NeedSendCommand(modulePointer, E_CMD_IDQUESTION);
+
+			}
+
 			//TODO: Function for reseting all modules (RST1...RST7)
 
 			//NeedSendCommand(MODULE_1, E_CMD_IDQUESTION, 0);
@@ -214,49 +224,58 @@ void APP_Tasks (void)
 			Display_Task();
 			Menu_Task();
 
-			if(appData.needSendCommand == true)
-			{
-				appData.state = APP_STATE_SEND_COMMAND;
-			}
-			else if(appData.expectingResponse == true)
+			if((appData.expectingResponse == true)&&(!DRV_USART_ReceiverBufferIsEmpty(rs485Data.usartHandle)))
 			{
 				appData.state = APP_STATE_RECEIVE_COMMAND;
 			}
+			else if(appData.needSendCommand == true)
+			{
+				appData.state = APP_STATE_SEND_COMMAND;
+			}
+			
 
+			if(appData.needDisplayUpdate == true)
+			{
+				appData.state = APP_STATE_DISPLAY_CHANGE;
+			}
+            
 			//if(appData.secondsCount >= 15)
 			//{
 			//
 			//	appData.currentScreen = DISP_SCR_MAIN_MENU;
 			//	NeedDisplayUpdate();
 			//}
-
-			if(appData.needDisplayUpdate == true)
-			{
-				appData.state = APP_STATE_DISPLAY_CHANGE;
-			}
-
-			//if(testCount >= 20)
-			//{
-			//	SendMessage(MODULE_1, E_CMD_VOLTMMODE, voltmeter23132.currentMode);
-			//	testCount = 0;
-			//}
 			break;
 		}
 
 		case APP_STATE_SEND_COMMAND:
 		{
-			appData.needSendCommand = SendMessage(rs485Data.id, rs485Data.command, rs485Data.parameter);
-			RS485_Direction_Mode(RECEIVING);
+			
+			RS485_Direction_Mode(SENDING);
+			sprintf(txBuffer, "ID%d%s%d", rs485Data.id, cmdData[rs485Data.command], rs485Data.parameter);
+			appData.needSendCommand = SendMessage(txBuffer);
 			appData.expectingResponse = true;
+			RS485_Direction_Mode(RECEIVING);
+			if()
+			appData.state = APP_STATE_SERVICE_TASKS;
 			break;
 		}
 		case APP_STATE_RECEIVE_COMMAND:
 		{
-			//GetMessage();
-			RS485_Direction_Mode(SENDING);
-			appData.state = APP_STATE_SERVICE_TASKS;
-		}
+			//char rxBuffer[8];
+			rxBuffer[0] = GetMessage(rxBuffer);
 
+			//char testString[] = "ID1VMM";
+			 
+			/*if(parseUSARTMessage(rxBuffer, txBuffer) == 0)
+			{
+				appData.backlightColor = COL_GREEN_CUSTOM;
+				appData.expectingResponse = false;	
+			}*/
+			//appData.expectingResponse = false;
+			appData.state = APP_STATE_SERVICE_TASKS;
+			break;
+		}
 		case APP_STATE_DISPLAY_CHANGE:
 		{
 			appData.needDisplayUpdate = false;
