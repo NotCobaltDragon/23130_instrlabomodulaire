@@ -120,6 +120,11 @@ void Menu_Task()
 				NeedDisplayUpdate();
 				Pec12PbClear();
 			}
+			if(appData.needSendCommand == false && appData.expectingResponse == false && appData.periodicVoltage >= GET_VOLTAGE_FREQUENCY)
+			{
+				NeedSendCommand(appData.moduleSelected, E_CMD_VOLTMREAD, 0);
+				appData.periodicVoltage = 0;
+			}
 			break;
 		}
 

@@ -76,7 +76,8 @@ extern APP_DATA	appData;
 
 void __ISR(_TIMER_1_VECTOR, ipl5AUTO) IntHandlerDrvTmrInstance0(void)
 {
-	APP_MainTimerCallback();  
+	APP_MainTimerCallback();
+	CommandSendIntervalCallback();
 	PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_1);
 }
 
@@ -89,7 +90,6 @@ void __ISR(_TIMER_3_VECTOR, ipl5AUTO) IntHandlerDrvTmrInstance1(void)
 void __ISR(_TIMER_2_VECTOR, ipl2AUTO) IntHandlerDrvTmrInstance2(void)
 {
 	ScanPec12();
-	//ResponseTimeout();
 	PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_2);
 }
  

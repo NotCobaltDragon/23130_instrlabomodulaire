@@ -1,8 +1,8 @@
 //-----------------------------------------------------------
 // File Name    : RS485_Driver.h	                        |
-// Project Name : 23130_instrlabomodulaire                  |
+// Project Name : 2313_instrlabomodulaire                   |
 // Version      : V1                                        |
-// Date         : 30.08.2023                                |
+// Date         : 11.09.2023                                |
 // Author       : Alexandre Steffen                         |
 //-----------------------------------------------------------
 #ifndef RS485_DRIVER_H	/* Guard against multiple inclusion */
@@ -18,6 +18,8 @@
 
 #define SENDING false
 #define RECEIVING true
+
+#define MESSAGE_TIMEOUT 10 //unit in [ms]
 
 typedef enum
 {
@@ -43,6 +45,8 @@ typedef struct
 	bool selectedDirection;
 	bool isResponseTimeoutReached;
 
+	uint8_t messageDataTimeout;
+
 	char receivedMessage[20];
 
 	E_ID_MODULES id;
@@ -54,15 +58,25 @@ bool Init_RS485(bool defaultMode);
 
 bool SendMessage(char txBuffer[8]);
 
-char GetMessage(char rxBuffer[]);
+bool GetMessage(char* rxBuffer);
 
 //uint8_t parseUSARTMessage(char *receivedMessage, E_ID_MODULES correctId, E_Command correctCommand, float correctParameter);
+
+uint8_t ExtractId(char *rxBuffer);
+
+uint8_t ExtractCommand(char *rxBuffer);
+
+uint8_t ExtractParameter(char *rxBuffer);
+
+void MessageDataTimeoutReset(void);
 
 void RS485_Direction_Mode(bool directionMode);
 
 void RS485_Sending_Mode(void);
 
 void RS485_Receiving_Mode(void);
+
+uint8_t GetID(void);
 
 
 #endif

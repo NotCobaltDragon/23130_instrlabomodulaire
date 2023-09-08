@@ -1,13 +1,11 @@
 //-----------------------------------------------------------
 // File Name    : RS485_Driver.c	                        |
-// Project Name : 23130_instrlabomodulaire                  |
+// Project Name : 2313_instrlabomodulaire                   |
 // Version      : V1                                        |
-// Date         : 30.08.2023                                |
+// Date         : 11.09.2023                                |
 // Author       : Alexandre Steffen                         |
 //-----------------------------------------------------------
 #include "RS485_Driver.h"
-//#include "system_config.h"
-//#include "system_definitions.h"
 
 #define MESS_SIZE
 
@@ -31,14 +29,15 @@ bool Init_RS485(bool defaultMode)
 		isUsartOpened = true;
 	}
 
-	return rs485Data.usartHandle;
+	return isUsartOpened;
 }
 
 bool SendMessage(char txBuffer[8])
 {
 	bool needSendCommand = true;
 	int nbByteWritten = 0;
-	uint8_t bufferSize = strlen(txBuffer);
+	uint8_t bufferSize = strlen(txBuffer) + 1;
+
 
 	while(nbByteWritten < bufferSize)
 	{
@@ -50,20 +49,28 @@ bool SendMessage(char txBuffer[8])
 	return needSendCommand;
 }
 
-char GetMessage(char rxBuffer[])
+bool GetMessage(char* rxBuffer)
 {
 	int nbByteReceived = 0;
-	rs485Data.isResponseTimeoutReached = false;
+	MessageDataTimeoutReset();
 
 	do
 	{
 		if(DRV_USART_TRANSFER_STATUS_RECEIVER_DATA_PRESENT & DRV_USART_TransferStatus(rs485Data.usartHandle))
 		{
 			rxBuffer[nbByteReceived++] = DRV_USART_ReadByte(rs485Data.usartHandle);
+			MessageDataTimeoutReset();
 		}
-	}while(nbByteReceived < 8);
-	return rxBuffer;
+	}while((nbByteReceived < 8) && (rs485Data.isResponseTimeoutReached != true));
+	//if(rs485Data.isResponseTimeoutReached)
+	return true;
 }
+
+void ClearReceiveBuffer()
+{
+	
+}
+
 
 
 
@@ -96,7 +103,7 @@ char GetMessage(char rxBuffer[])
     return receptionBuffer;
 }*/
 
-uint8_t parseUSARTMessage(char rxBuffer[], char txBuffer[])
+/*uint8_t parseUSARTMessage(char rxBuffer[], char txBuffer[])
 {
 	E_ID_MODULES receivedId = 0;
 	E_Command receivedCommand[4];
@@ -130,7 +137,7 @@ uint8_t parseUSARTMessage(char rxBuffer[], char txBuffer[])
 		{
 
 			receivedParameter += 
-		}*/
+		}
 	}
 	else
 	{
@@ -138,9 +145,65 @@ uint8_t parseUSARTMessage(char rxBuffer[], char txBuffer[])
 	}
 
 	return returnCode;
+}*/
+
+//uint8_t ExtractId(char *rxBuffer)
+//{
+//	uint8_t id;
+//	char tempBuffer[3];
+//
+//	strncpy(tempBuffer, rxBuffer, 3);
+//	id = atoi(tempBuffer);
+//
+//	return id;
+//}
+//
+//uint8_t ExtractCommand(char *rxBuffer)
+//{
+//	uint8_t commandPosition;
+//	for(commandPosition = 0; commandPosition < NB_CMD; commandPosition++)
+//	{
+//		if(strcmp(cmdData[commandPosition], &rxBuffer) == 0)
+//		{
+//			return commandPosition;
+//		}
+//	}
+//	return E_CMD_ERROR;
+//}
+//
+//uint8_t ExtractParameter(char *rxBuffer)
+//{
+//	//uint8_t startIndex = 6;
+//	uint8_t parameter;
+//	char tempChar[10];
+//	tempChar[0] = rxBuffer;
+//
+//	//tempChar = tempChar[6];
+//	parameter = tempChar[6] - '0';
+//
+//	/*while((rxBuffer[startIndex] >= '0') && (rxBuffer[startIndex] <= '9'))
+//	{
+//		
+//		startIndex++;
+//	}*/
+//	return parameter;
+//}
+
+void MessageDataTimeoutReset()
+{
+	rs485Data.messageDataTimeout = 0;
+	rs485Data.isResponseTimeoutReached = false;
 }
 
+void MessageDataTimeoutCallback()
+{
+	rs485Data.messageDataTimeout++;
 
+	if(rs485Data.messageDataTimeout >= MESSAGE_TIMEOUT)
+	{
+		rs485Data.isResponseTimeoutReached = true;
+	}
+}
 
 void ParityCheckHandler()
 {

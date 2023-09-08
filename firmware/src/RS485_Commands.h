@@ -1,8 +1,8 @@
 //-----------------------------------------------------------
 // File Name    : RS485_Commands.h	                        |
-// Project Name : 23130_instrlabomodulaire                  |
+// Project Name : 2313_instrlabomodulaire                   |
 // Version      : V1                                        |
-// Date         : 01.09.2023                                |
+// Date         : 11.09.2023                                |
 // Author       : Alexandre Steffen                         |
 //-----------------------------------------------------------
 #ifndef RS485_COMMANDS_H	/* Guard against multiple inclusion */
@@ -11,16 +11,21 @@
 #include <stdio.h>
 #include <string.h>
 
-extern const char cmdData[4][4];
+#define NB_CMD 5
+#define NB_CHAR_CMD 4 //Nb caracter + 1
+
+extern const char cmdData[NB_CMD][NB_CHAR_CMD];
 
 extern const char nameModulesData[2][12];	//11 is the maximum characters on screen + 1
 
 //Voltmeter 23132 specific commands
 typedef enum
 {
+	E_CMD_ERROR = 0,
 	E_CMD_IDQUESTION = 1,
 	E_CMD_VOLTMGAIN,
 	E_CMD_VOLTMMODE,
+	E_CMD_VOLTMREAD,
 }E_Command;
 
 #endif

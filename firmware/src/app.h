@@ -80,6 +80,10 @@ extern "C" {
 /** @name Time & delays definitions in tenths of a second (*0.1 = s)... */
 #define APP_HEARTBEAT_DELAY_100ms   10      ///< ...to monitor app life
 
+#define QTY_MODULES 7
+
+#define GET_VOLTAGE_FREQUENCY 100 // unit in *10[ms]
+
 #define DC_MODE false
 #define AC_MODE true
 
@@ -127,6 +131,11 @@ typedef enum
 	MODULE_7,
 } E_MODULE_ID;
 
+//typedef enum
+//{
+//
+//}E_POWER_ON_STATE;
+
 // *****************************************************************************
 /* Application Data
 
@@ -149,7 +158,7 @@ typedef struct
 
 	uint32_t mainTimerCount;
 	bool mainTimerDelayHasElapsed;
-	uint32_t secondsCount;
+	//uint32_t secondsCount;
 
 	uint8_t currentScreen;
 	uint32_t backlightColor;
@@ -159,6 +168,8 @@ typedef struct
 	bool expectingResponse;
 
 	uint32_t responseTimeoutCounter;
+
+	uint32_t periodicVoltage;
 
 	uint8_t positionCursor;
 	uint8_t positionList;

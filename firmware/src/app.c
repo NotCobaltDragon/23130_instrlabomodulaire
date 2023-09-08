@@ -86,7 +86,9 @@ extern RS485_DATA rs485Data;
 
 char txBuffer[8];
 char rxBuffer[8];
-uint8_t modulePointer;
+E_MODULE_ID modulePointer = MODULE_1;
+
+//E_POWER_ON_STATE powerOnState;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -112,7 +114,7 @@ void APP_MainTimerCallback()
 void UpdateDisplayValues()
 {
 	//updates display values
-	DisplayValues_MainMenu(appData.positionList, appData.positionCursor, slotData[appData.positionList].model, slotData[appData.positionList+1].model, slotData[appData.positionList+1].model);
+	DisplayValues_MainMenu(appData.positionList, appData.positionCursor, slotData[appData.positionList].model, slotData[appData.positionList+1].model, slotData[appData.positionList+2].model);
 	DisplayValues_23132(voltmeter23132.valueVoltmeter, voltmeter23132.currentMode, voltmeter23132.holdMode, appData.positionCursor);
 }
 
@@ -137,7 +139,6 @@ void APP_Initialize ( void )
 
 	appData.mainTimerCount = 0;
 	appData.mainTimerDelayHasElapsed = false;
-	appData.secondsCount = 0;
 	appData.currentScreen = DISP_SCR_WELCOME;
 	appData.backlightColor = COL_WHITE;
 	appData.positionCursor = 0;
@@ -153,16 +154,12 @@ void APP_Initialize ( void )
 		See prototype in app.h.
  */
 
-uint8_t testCount = 0; //Test for counting, must be removed
-
 void APP_Tasks (void)
 {
 	if(appData.mainTimerDelayHasElapsed)
 	{
 		appData.mainTimerDelayHasElapsed = false;
 		LED2On();
-		appData.secondsCount++;
-		testCount++; //Test for counting, must be removed
 		UpdateDisplayValues();
 	}
 
@@ -189,19 +186,31 @@ void APP_Tasks (void)
 
 		case APP_STATE_POWER_ON:
 		{
-			for(modulePointer = 1 ; modulePointer < sizeof(slotData.id); modulePointer++)
+			/*if(modulePointer < QTY_MODULES)
 			{
-				NeedSendCommand(modulePointer, E_CMD_IDQUESTION);
-
-			}
+				switch(powerOnState)
+				{
+					case SEND_IDENTIFICATION:
+						NeedSendCommand(modulePointer, E_CMD_IDQUESTION, 0);
+						appData.state = APP_STATE_SEND_COMMAND;
+						break;
+					case RECEIVE_INDENTIFICATION:
+						break;
+					case 
+						break;
+					default:
+						break;
+				}
+				
+			}*/
 
 			//TODO: Function for reseting all modules (RST1...RST7)
 
 			//NeedSendCommand(MODULE_1, E_CMD_IDQUESTION, 0);
 
 			//FOR TESTING, REPLACE BY DATA COLLECTED AT INIT
-			slotData[0].model = MODULE_23132;
-			slotData[0].id = MODULE_1;
+			slotData[1].model = MODULE_23132;
+			slotData[1].id = MODULE_2;
 			//slotData[2].model = MODULE_23132;
 			//slotData[2].model = EMPTY;
 			//slotData[3].model = EMPTY;
@@ -238,55 +247,44 @@ void APP_Tasks (void)
 			{
 				appData.state = APP_STATE_DISPLAY_CHANGE;
 			}
-            
-			//if(appData.secondsCount >= 15)
-			//{
-			//
-			//	appData.currentScreen = DISP_SCR_MAIN_MENU;
-			//	NeedDisplayUpdate();
-			//}
 			break;
 		}
 
 		case APP_STATE_SEND_COMMAND:
 		{
-			
 			RS485_Direction_Mode(SENDING);
 			sprintf(txBuffer, "ID%d%s%d", rs485Data.id, cmdData[rs485Data.command], rs485Data.parameter);
 			appData.needSendCommand = SendMessage(txBuffer);
 			appData.expectingResponse = true;
 			RS485_Direction_Mode(RECEIVING);
-			if()
+			
 			appData.state = APP_STATE_SERVICE_TASKS;
 			break;
 		}
 		case APP_STATE_RECEIVE_COMMAND:
 		{
-			//char rxBuffer[8];
 			rxBuffer[0] = GetMessage(rxBuffer);
 
-			//char testString[] = "ID1VMM";
-			 
+
+
 			/*if(parseUSARTMessage(rxBuffer, txBuffer) == 0)
 			{
 				appData.backlightColor = COL_GREEN_CUSTOM;
 				appData.expectingResponse = false;	
 			}*/
-			//appData.expectingResponse = false;
+			appData.expectingResponse = false;
 			appData.state = APP_STATE_SERVICE_TASKS;
 			break;
 		}
 		case APP_STATE_DISPLAY_CHANGE:
 		{
 			appData.needDisplayUpdate = false;
-			appData.secondsCount = 0;
 			DisplayScreen(appData.currentScreen, false);
 			UpdateDisplayValues();
 			DisplaySetBacklightRGB(appData.backlightColor);
 			appData.state = APP_STATE_SERVICE_TASKS;
 			break;
 		}
-
 		/* The default state should never be executed. */
 		default:
 		{
@@ -298,7 +296,6 @@ void APP_Tasks (void)
 
 void DisplayErrorScreen(E_ERROR_HANDLER error)
 {
-	appData.secondsCount = 0;
 	appData.backlightColor = COL_RED;
 	appData.currentScreen = DISP_SCR_ERROR;
 	DisplayScreen(appData.currentScreen, false);
@@ -310,7 +307,7 @@ void VoltmeterInit()
 {
 	voltmeter23132.currentMode = DC_MODE;
 	voltmeter23132.holdMode = false;
-	voltmeter23132.valueVoltmeter = 53.29;
+	voltmeter23132.valueVoltmeter = 53.29;	//Test value
 }
 
 void NeedSendCommand(E_MODULE_ID id, E_Command command, uint8_t parameter)
@@ -324,6 +321,11 @@ void NeedSendCommand(E_MODULE_ID id, E_Command command, uint8_t parameter)
 void NeedDisplayUpdate()
 {
 	appData.needDisplayUpdate = true;
+}
+
+void CommandSendIntervalCallback()
+{
+	appData.periodicVoltage++;
 }
 
 //void Menu_Update(E_MODULE_MODEL model)
