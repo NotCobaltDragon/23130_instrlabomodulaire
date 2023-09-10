@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define NB_CMD 5
+#define NB_CMD 5 	//Should match the umber of enumerations bellow
 #define NB_CHAR_CMD 4 //Nb caracter + 1
 
 extern const char cmdData[NB_CMD][NB_CHAR_CMD];
