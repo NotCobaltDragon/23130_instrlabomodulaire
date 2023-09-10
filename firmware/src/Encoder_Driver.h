@@ -8,8 +8,8 @@
 #ifndef ENCODER_DRIVER_H    /* Guard against multiple inclusion */
 #define ENCODER_DRIVER_H
 
-#include "app.h"
-
+#include <stdbool.h>
+#include "system_definitions.h"
 
 typedef struct
 {

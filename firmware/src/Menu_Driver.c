@@ -2,26 +2,15 @@
 // File Name    : Menu_Driver.c		                        |
 // Project Name : 23130_instrlabomodulaire                  |
 // Version      : V1                                        |
-// Date         : 30.08.2023                                |
+// Date         : 10.09.2023                                |
 // Author       : Alexandre Steffen                         |
 //-----------------------------------------------------------
 #include "Menu_Driver.h"
-
-
-//TEMPORARY FOR DEBUG
-#include "RS485_Driver.h"
-#include "RS485_Commands.h"
-
 
 extern APP_DATA appData;
 extern MODULE_SLOT_DATA slotData[7];
 extern PEC12 pec12;
 extern VOLTMETER_23132 voltmeter23132;
-//extern E_DISPLAY_SCREENS menuState;
-
-extern RS485_DATA rs485Data;
-
-
 
 void Menu_Task()
 {
@@ -31,7 +20,7 @@ void Menu_Task()
 		{
 			if(pec12.stateInc == true)
 			{
-				if(appData.positionCursor == 2 && appData.positionList < 4)
+				if(appData.positionCursor == (MENU_NB_DISPLAYED_ITEMS-1) && appData.positionList < (MENU_TOT_NB_ITEMS - MENU_NB_DISPLAYED_ITEMS + 1))
 				{
 					appData.positionList++;
 				}
@@ -81,7 +70,7 @@ void Menu_Task()
 		{
 			if(pec12.stateInc == true)
 			{
-				if(appData.positionCursor != (MAX_BUTTON - 1))
+				if(appData.positionCursor != (MAX_NB_BUTTON_23132 - 1))
 					appData.positionCursor++;
 				NeedDisplayUpdate();
 				Pec12IncClear();
@@ -110,10 +99,8 @@ void Menu_Task()
 						voltmeter23132.holdMode = !voltmeter23132.holdMode;
 						NeedDisplayUpdate();
 						break;
-					case 3:
-						rs485Data.selectedDirection = !rs485Data.selectedDirection;
-						RS485_Direction_Mode(rs485Data.selectedDirection);
-						break;
+					//case 3:
+						//break;
 					default:
 						break;
 				}

@@ -2,7 +2,7 @@
 // File Name    : RS485_Commands.c	                        |
 // Project Name : 2313_instrlabomodulaire                   |
 // Version      : V1                                        |
-// Date         : 11.09.2023                                |
+// Date         : 10.09.2023                                |
 // Author       : Alexandre Steffen                         |
 //-----------------------------------------------------------
 #include "RS485_Commands.h"

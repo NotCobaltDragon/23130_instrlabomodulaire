@@ -38,8 +38,6 @@
 static T_DISPLAY disp;
 ///@}
 extern MODULE_SLOT_DATA slotData[7];
-
-extern RS485_DATA rs485Data; //FOR TESTING -> TO DELETE
 /* ************************************************************************** */
 /* ************************************************************************** */
 /** @name Section: Task Callback Routines                                     */
@@ -120,7 +118,7 @@ static void DisplayClearPage(uint8_t p, bool setToClear) {
  */
 static void DisplayScreen_Welcome(bool setToDark){
 	char str_Welcome_1[] = "2313";
-	char str_Welcome_2[] = "v1.0.1";
+	char str_Welcome_2[] = "v1.0.0";
 	char str_Welcome_3[] = "Steffen Alex";
 	
 	if (setToDark){
@@ -142,33 +140,6 @@ static void DisplayScreen_Welcome(bool setToDark){
 	UG_PutString(4 ,50 , str_Welcome_3);
 	
 }   /* DisplayScreen_Welcome */
-
-/* -------------------------------------------------------------------------- */
-/**
- * @brief   Displays the error screen
- * 
- * @param   setToDark   true = dark ; false = clear
- * 
- */
-void DisplayScreen_Error()
-{	
-	DisplayClear(true);
-	UG_SetBackcolor (C_BLACK);
-	UG_SetForecolor (C_WHITE);
-	UG_FillFrame(0, 0, 127, 63, C_BLACK);
-	UG_FontSetHSpace(0);
-	UG_FontSelect (&FONT_6X8);
-	UG_PutString(1, 2, "ERROR !!!");
-	UG_DrawFrame(0, 0, 127, 63, C_WHITE);
-	UG_DrawLine(0, 10, 127, 10, C_WHITE);
-	UG_FillCircle(21, 35, 25, C_WHITE);
-	UG_FontSelect(&FONT_22X36);
-	UG_PutString(35, 24, "UART Error");
-	//UG_DrawLine(0, 53, 127, 53, C_BLACK);
-	//UG_DrawLine(32, 63, 32, 53, C_BLACK);
-	//UG_DrawLine(62, 63, 62, 53, C_BLACK);
-	//UG_DrawLine(77, 63, 77, 53, C_BLACK);
-}
 
 void DisplayScreen_MainMenu(bool setToDark)
 {
@@ -296,31 +267,6 @@ void DrawHoldMode(bool holdMode, bool selected)
 	UG_PutString(66, 55, "HOLD");*/
 }
 
-void DrawRxTxMode(bool directionMode, bool selected)
-{
-	int foreColor = C_BLACK;
-	int backColor = C_WHITE;
-
-	if(selected)
-	{
-		foreColor = C_WHITE;
-		backColor = C_BLACK;
-	}
-	UG_FillFrame(78, 54, 126, 62, backColor);
-
-	UG_SetBackcolor (backColor);
-	UG_SetForecolor (foreColor);
-	UG_FontSelect (&FONT_6X8);
-	if(directionMode == SENDING)
-	{
-		UG_PutString(78, 55, "SEND");
-	}
-	else
-	{
-		UG_PutString(78, 55, "RECEIVE");
-	}
-}
-
 ///@}
 
 /* ************************************************************************** */
@@ -352,7 +298,7 @@ void DisplayValues_MainMenu(uint8_t positionList, uint8_t positionCursor, uint8_
 		switch(positionCursor)
 		{
 			case 0:
-				UG_DrawLine(2, 18, 4, 20, C_BLACK);	//TODO: Function for arrow
+				UG_DrawLine(2, 18, 4, 20, C_BLACK);	//TODO: Function for arrow with xy as parameters
 				UG_DrawLine(2, 22, 4, 20, C_BLACK);
 				break;
 			case 1:
@@ -394,7 +340,6 @@ void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, 
 		DrawMenuIcon(false);
 		DrawCurrentMode(currentMode, false);
 		DrawHoldMode(holdMode, false);
-		DrawRxTxMode(rs485Data.selectedDirection, false);
 		switch(position)
 		{
 			case 0:
@@ -406,9 +351,8 @@ void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, 
 			case 2:
 				DrawHoldMode(holdMode, true);
 				break;
-			case 3:
-				DrawRxTxMode(rs485Data.selectedDirection, true);
-				break;
+			//case 3:
+				//break;
 			default:
 				break;
 		}
@@ -477,9 +421,9 @@ void DisplayScreen(uint8_t screen, bool setToDark){
 		case DISP_SCR_WELCOME:
 			DisplayScreen_Welcome(true);            
 			break;
-		case DISP_SCR_ERROR:
-			DisplayScreen_Error();
-			break;
+		//case DISP_SCR_ERROR:
+			//DisplayScreen_Error();	//TODO: Error handling
+			//break;
 		case DISP_SCR_MAIN_MENU:
 			DisplayScreen_MainMenu(true);
 			break;

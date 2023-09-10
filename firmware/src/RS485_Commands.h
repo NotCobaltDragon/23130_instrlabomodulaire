@@ -2,7 +2,7 @@
 // File Name    : RS485_Commands.h	                        |
 // Project Name : 2313_instrlabomodulaire                   |
 // Version      : V1                                        |
-// Date         : 11.09.2023                                |
+// Date         : 10.09.2023                                |
 // Author       : Alexandre Steffen                         |
 //-----------------------------------------------------------
 #ifndef RS485_COMMANDS_H	/* Guard against multiple inclusion */

@@ -179,6 +179,8 @@ void APP_Tasks (void)
 			//Open USART for RS485
 			appData.isUsartOpened = Init_RS485(SENDING);
 
+			//TODO add error handling if USART didn't opened
+
 			appData.state = APP_STATE_POWER_ON;
 			
 			break;
@@ -208,7 +210,10 @@ void APP_Tasks (void)
 
 			//NeedSendCommand(MODULE_1, E_CMD_IDQUESTION, 0);
 
-			//FOR TESTING, REPLACE BY DATA COLLECTED AT INIT
+
+
+			//FOR TESTING, REPLACE BY AUTOMATIC DATA COLLECTION WITH
+			//IDxID? COMMAND.
 			slotData[1].model = MODULE_23132;
 			slotData[1].id = MODULE_2;
 			//slotData[2].model = MODULE_23132;
@@ -218,13 +223,11 @@ void APP_Tasks (void)
 			//slotData[5].model = EMPTY;
 			//slotData[6].model = EMPTY;
 
-			appData.currentScreen = DISP_SCR_MAIN_MENU;
-
-			//END CODE TESTING
-
 			VoltmeterInit();
-			appData.state = APP_STATE_DISPLAY_CHANGE;
-			//appData.state = APP_STATE_SERVICE_TASKS;	
+			
+			//END CODE TESTING
+			appData.currentScreen = DISP_SCR_MAIN_MENU;
+			appData.state = APP_STATE_DISPLAY_CHANGE;	
 			break;
 		}
 
@@ -241,7 +244,6 @@ void APP_Tasks (void)
 			{
 				appData.state = APP_STATE_SEND_COMMAND;
 			}
-			
 
 			if(appData.needDisplayUpdate == true)
 			{
@@ -265,13 +267,6 @@ void APP_Tasks (void)
 		{
 			rxBuffer[0] = GetMessage(rxBuffer);
 
-
-
-			/*if(parseUSARTMessage(rxBuffer, txBuffer) == 0)
-			{
-				appData.backlightColor = COL_GREEN_CUSTOM;
-				appData.expectingResponse = false;	
-			}*/
 			appData.expectingResponse = false;
 			appData.state = APP_STATE_SERVICE_TASKS;
 			break;
@@ -294,20 +289,24 @@ void APP_Tasks (void)
 	}
 }
 
-void DisplayErrorScreen(E_ERROR_HANDLER error)
-{
-	appData.backlightColor = COL_RED;
-	appData.currentScreen = DISP_SCR_ERROR;
-	DisplayScreen(appData.currentScreen, false);
-	DisplaySetBacklightRGB(appData.backlightColor);
-	while(1){}	//Error detected, must reset main module
-}
+// FUNCTION DEPRECATED, needs revision for error handling
+
+//void DisplayErrorScreen(E_ERROR_HANDLER error)
+//{
+//	appData.backlightColor = COL_RED;
+//	appData.currentScreen = DISP_SCR_ERROR;
+//	DisplayScreen(appData.currentScreen, false);
+//	DisplaySetBacklightRGB(appData.backlightColor);
+//	while(1){}	//Error detected, must reset main module
+//}
 
 void VoltmeterInit()
 {
+	//Sets default mode of the voltmeter menu
+	//should ideally be the same on modules code
 	voltmeter23132.currentMode = DC_MODE;
 	voltmeter23132.holdMode = false;
-	voltmeter23132.valueVoltmeter = 53.29;	//Test value
+	voltmeter23132.valueVoltmeter = 53.29;	//Example test value
 }
 
 void NeedSendCommand(E_MODULE_ID id, E_Command command, uint8_t parameter)
@@ -327,12 +326,6 @@ void CommandSendIntervalCallback()
 {
 	appData.periodicVoltage++;
 }
-
-//void Menu_Update(E_MODULE_MODEL model)
-//{
-//	
-//}
-
 /*******************************************************************************
  End of File
  */

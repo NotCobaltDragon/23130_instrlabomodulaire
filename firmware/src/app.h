@@ -154,11 +154,8 @@ typedef struct
 	/* The application's current state */
 	APP_STATES state;
 
-	//E_MODULES idSelected;
-
 	uint32_t mainTimerCount;
 	bool mainTimerDelayHasElapsed;
-	//uint32_t secondsCount;
 
 	uint8_t currentScreen;
 	uint32_t backlightColor;
@@ -166,8 +163,6 @@ typedef struct
 	bool needDisplayUpdate;
 	bool needSendCommand;
 	bool expectingResponse;
-
-	uint32_t responseTimeoutCounter;
 
 	uint32_t periodicVoltage;
 
