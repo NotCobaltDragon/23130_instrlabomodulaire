@@ -84,8 +84,12 @@ VOLTMETER_23132 voltmeter23132;
 
 extern RS485_DATA rs485Data;
 
-char txBuffer[8];
-char rxBuffer[8];
+RX_TX_DATA sending;
+
+RX_TX_DATA received;
+
+//char txBuffer[8];
+//char rxBuffer[8];
 E_MODULE_ID modulePointer = MODULE_1;
 
 //E_POWER_ON_STATE powerOnState;
@@ -114,8 +118,18 @@ void APP_MainTimerCallback()
 void UpdateDisplayValues()
 {
 	//updates display values
-	DisplayValues_MainMenu(appData.positionList, appData.positionCursor, slotData[appData.positionList].model, slotData[appData.positionList+1].model, slotData[appData.positionList+2].model);
-	DisplayValues_23132(voltmeter23132.valueVoltmeter, voltmeter23132.currentMode, voltmeter23132.holdMode, appData.positionCursor);
+	DisplayValues_MainMenu(
+		appData.positionList,
+		appData.positionCursor,
+		slotData[appData.positionList].model,
+		slotData[appData.positionList+1].model,
+		slotData[appData.positionList+2].model);
+	
+	DisplayValues_23132(
+		voltmeter23132.valueVoltmeter,
+		voltmeter23132.currentMode,
+		voltmeter23132.holdMode,
+		appData.positionCursor);
 }
 
 // *****************************************************************************
@@ -300,6 +314,11 @@ void APP_Tasks (void)
 //	while(1){}	//Error detected, must reset main module
 //}
 
+void IniCommands()
+{
+	RegisterCommand(MC_GETID_CMD, AskModuleId);
+}
+
 void VoltmeterInit()
 {
 	//Sets default mode of the voltmeter menu
@@ -307,6 +326,9 @@ void VoltmeterInit()
 	voltmeter23132.currentMode = DC_MODE;
 	voltmeter23132.holdMode = false;
 	voltmeter23132.valueVoltmeter = 53.29;	//Example test value
+	RegisterCommand(VM_SET_GAIN_CMD, SetVoltmeterGain);
+	RegisterCommand(VM_SET_MODE_CMD, SetVoltmeterMode);
+	RegisterCommand(VM_READ_VOLTAGE_CMD, GetVoltmeterValue);
 }
 
 void NeedSendCommand(E_MODULE_ID id, E_Command command, uint8_t parameter)

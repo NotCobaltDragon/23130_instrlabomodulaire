@@ -60,8 +60,6 @@ bool SendMessage(char txBuffer[8]);
 
 bool GetMessage(char* rxBuffer);
 
-//uint8_t parseUSARTMessage(char *receivedMessage, E_ID_MODULES correctId, E_Command correctCommand, float correctParameter);
-
 uint8_t ExtractId(char *rxBuffer);
 
 uint8_t ExtractCommand(char *rxBuffer);

@@ -20,7 +20,8 @@ void Menu_Task()
 		{
 			if(pec12.stateInc == true)
 			{
-				if(appData.positionCursor == (MENU_NB_DISPLAYED_ITEMS-1) && appData.positionList < (MENU_TOT_NB_ITEMS - MENU_NB_DISPLAYED_ITEMS + 1))
+				if((appData.positionCursor == (MENU_NB_DISPLAYED_ITEMS-1)) 
+					&& (appData.positionList < (MENU_TOT_NB_ITEMS - MENU_NB_DISPLAYED_ITEMS + 1)))
 				{
 					appData.positionList++;
 				}
@@ -107,7 +108,9 @@ void Menu_Task()
 				NeedDisplayUpdate();
 				Pec12PbClear();
 			}
-			if(appData.needSendCommand == false && appData.expectingResponse == false && appData.periodicVoltage >= GET_VOLTAGE_FREQUENCY)
+			if(appData.needSendCommand == false 
+				&& appData.expectingResponse == false 
+				&& appData.periodicVoltage >= GET_VOLTAGE_FREQUENCY)
 			{
 				NeedSendCommand(appData.moduleSelected, E_CMD_VOLTMREAD, 0);
 				appData.periodicVoltage = 0;

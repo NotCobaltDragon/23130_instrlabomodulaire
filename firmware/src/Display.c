@@ -276,7 +276,9 @@ void DrawHoldMode(bool holdMode, bool selected)
 /* ************************************************************************** */
 
 
-void DisplayValues_MainMenu(uint8_t positionList, uint8_t positionCursor, uint8_t moduleA, uint8_t moduleB, uint8_t moduleC)
+void DisplayValues_MainMenu(
+	uint8_t positionList, uint8_t positionCursor,
+	uint8_t moduleA, uint8_t moduleB, uint8_t moduleC)
 {
 	char slotA[20];
 	char slotB[20];
