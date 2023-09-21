@@ -254,7 +254,7 @@ void APP_Tasks (void)
 			{
 				appData.state = APP_STATE_RECEIVE_COMMAND;
 			}
-			else if(appData.needSendCommand == true)
+			else if(appData.needSendCommand == true || correctMessage == false)
 			{
 				appData.state = APP_STATE_SEND_COMMAND;
 			}
@@ -269,17 +269,29 @@ void APP_Tasks (void)
 		case APP_STATE_SEND_COMMAND:
 		{
 			RS485_Direction_Mode(SENDING);
-			sprintf(txBuffer, "ID%d%s%d", rs485Data.id, cmdData[rs485Data.command], rs485Data.parameter);
-			appData.needSendCommand = SendMessage(txBuffer);
+			//sprintf(txBuffer, "ID%d%s%d", rs485Data.id, cmdData[rs485Data.command], rs485Data.parameter);
+			appData.needSendCommand = SendMessage(sending.buffer);
 			appData.expectingResponse = true;
 			RS485_Direction_Mode(RECEIVING);
-			
 			appData.state = APP_STATE_SERVICE_TASKS;
 			break;
 		}
 		case APP_STATE_RECEIVE_COMMAND:
 		{
-			rxBuffer[0] = GetMessage(rxBuffer);
+			//rxBuffer[0] = GetMessage(rxBuffer);
+			GetMessage(received.buffer);
+			sscanf(received.buffer, "ID%u%4s%s", &received.id, received.command, received.parameter);
+			if(strcmp(received.buffer, sending.buffer) == 0)
+			//if(IdChecker(received.id, sending.id) == true
+			//	&& strcmp(received.command, sending.command) == 0
+			//	&& strcmp(received.parameter, sending.parameter) == 0)
+			{
+				appData.correctMessage == true;
+			}
+			else
+			{
+				appData.correctMessage == false;
+			}
 
 			appData.expectingResponse = false;
 			appData.state = APP_STATE_SERVICE_TASKS;
@@ -314,9 +326,10 @@ void APP_Tasks (void)
 //	while(1){}	//Error detected, must reset main module
 //}
 
-void IniCommands()
+void InitCommands()
 {
-	RegisterCommand(MC_GETID_CMD, AskModuleId);
+	//RegisterCommand(GC_GETID_CMD, AskModuleId);
+	Register(MODULE_VOLTMETER, VoltmeterInit);
 }
 
 void VoltmeterInit()
@@ -326,17 +339,20 @@ void VoltmeterInit()
 	voltmeter23132.currentMode = DC_MODE;
 	voltmeter23132.holdMode = false;
 	voltmeter23132.valueVoltmeter = 53.29;	//Example test value
-	RegisterCommand(VM_SET_GAIN_CMD, SetVoltmeterGain);
-	RegisterCommand(VM_SET_MODE_CMD, SetVoltmeterMode);
-	RegisterCommand(VM_READ_VOLTAGE_CMD, GetVoltmeterValue);
+	//RegisterCommand(VM_SET_GAIN_CMD, SetVoltmeterGain);
+	//RegisterCommand(VM_SET_MODE_CMD, SetVoltmeterMode);
+	//RegisterCommand(VM_READ_VOLTAGE_CMD, GetVoltmeterValue);
 }
 
-void NeedSendCommand(E_MODULE_ID id, E_Command command, uint8_t parameter)
+void NeedSendCommand(uint8_t id, const char* command, const char* parameter)
 {
+	//rs485Data.id = id;
+	//rs485Data.command = command;
+	//rs485Data.parameter = parameter;
+
+	sprintf(sending.buffer, "ID%d%s%s", sending.id, sending.command, sending.parameter);
+	//sending.id = id;
 	appData.needSendCommand = true;
-	rs485Data.id = id;
-	rs485Data.command = command;
-	rs485Data.parameter = parameter;
 }
 
 void NeedDisplayUpdate()

@@ -51,7 +51,6 @@
         <itemPath>../src/ugui_config.h</itemPath>
         <itemPath>../src/Menu_Driver.h</itemPath>
         <itemPath>../src/Encoder_Driver.h</itemPath>
-        <itemPath>../src/RS485_Commands.h</itemPath>
         <itemPath>../src/RS485_Driver.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
@@ -204,7 +203,6 @@
         <itemPath>../src/ugui.c</itemPath>
         <itemPath>../src/Menu_Driver.c</itemPath>
         <itemPath>../src/Encoder_Driver.c</itemPath>
-        <itemPath>../src/RS485_Commands.c</itemPath>
         <itemPath>../src/RS485_Driver.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="framework" projectFiles="true">
@@ -238,7 +236,7 @@
         <targetDevice>PIC32MX230F256D</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>ICD3PlatformTool</platformTool>
+        <platformTool>PK5Tool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.50</languageToolchainVersion>
         <platform>3</platform>

@@ -1,56 +1,43 @@
 //-----------------------------------------------------------
-// File Name    : rs485_driver.c	                        |
+// File Name    : RS485_Driver.c	                        |
 // Project Name : 2313_instrlabomodulaire                   |
 // Version      : V1                                        |
-// Date         : 13.09.2023                                |
+// Date         : 11.09.2023                                |
 // Author       : Alexandre Steffen                         |
 //-----------------------------------------------------------
-#include "rs485_driver.h"
+#include "RS485_Driver.h"
 
 #define MESS_SIZE
 
 RS485_DATA rs485Data;
 
-COMMAND_MAPPING commandMapping[MAX_NB_COMMANDS];
-
-
-bool Init_RS485(bool defaultDirection)
+bool Init_RS485(bool defaultMode)
 {
-	//PLIB_USART_ReceiverInterruptModeSelect(USART_ID_1, USART_RECEIVE_FIFO_HALF_FULL);
-	RS485_Direction_Mode(defaultDirection);
-	rs485Data.selectedDirection = defaultDirection;
+	bool isUsartOpened;
+
+	RS485_Direction_Mode(defaultMode);
+	rs485Data.selectedDirection = defaultMode;
 
 	rs485Data.usartHandle = DRV_USART_Open(DRV_USART_INDEX_0, DRV_IO_INTENT_NONBLOCKING);
     
 	if(rs485Data.usartHandle == DRV_HANDLE_INVALID)
-		return false; //UASRT isn't opened
-	else
-		return true; //USART opened
-}
-
-//Funcion to register a command and its associated function
-bool RegisterCommand(const char* command, void (*functionPtr)(const char* cmdParameter))
-{
-	static uint16_t numCommands = 0;
-
-	if(numCommands < MAX_NB_COMMANDS)
 	{
-		strcpy(commandMapping[numCommands].command, command);	
-		commandMapping[numCommands].cmdFunctionPtr = functionPtr;
-		numCommands++;
-		return true;	//Cmd created correctly
+		isUsartOpened = false;
 	}
 	else
 	{
-		return false;	//Number of commands created over the limit
+		isUsartOpened = true;
 	}
+
+	return isUsartOpened;
 }
 
-bool SendMessage(char txBuffer[RX_TX_BUFFER_SIZE])
+bool SendMessage(char txBuffer[8])
 {
-	//bool needSendCommand = true;
+	bool needSendCommand = true;
 	int nbByteWritten = 0;
-	uint8_t bufferSize = strlen(txBuffer);
+	uint8_t bufferSize = strlen(txBuffer) + 1;
+
 
 	while(nbByteWritten < bufferSize)
 	{
@@ -58,13 +45,15 @@ bool SendMessage(char txBuffer[RX_TX_BUFFER_SIZE])
 			DRV_USART_WriteByte(rs485Data.usartHandle, txBuffer[nbByteWritten++]);
 	}
 	while(!(DRV_USART_TRANSFER_STATUS_TRANSMIT_EMPTY & DRV_USART_TransferStatus(rs485Data.usartHandle))){}
-	return false;
+	needSendCommand = false;
+	return needSendCommand;
 }
 
 bool GetMessage(char* rxBuffer)
 {
 	int nbByteReceived = 0;
 	MessageDataTimeoutReset();
+
 	do
 	{
 		if(DRV_USART_TRANSFER_STATUS_RECEIVER_DATA_PRESENT & DRV_USART_TransferStatus(rs485Data.usartHandle))
@@ -75,29 +64,6 @@ bool GetMessage(char* rxBuffer)
 	}while((nbByteReceived < 8) && (rs485Data.isResponseTimeoutReached != true));
 	//if(rs485Data.isResponseTimeoutReached)
 	return true;
-}
-
-bool IdChecker(uint8_t idToCheck)
-{
-	if(idToCheck == rs485Data.id)
-		return true;	//Correct ID
-	else
-		return false;	//ID incorrect or not concerned
-}
-
-void ClearBuffer(char* buffer)
-{
-	char dummy;
-	uint8_t clearBufferCounter = 0;
-
-	while(DRV_USART_TRANSFER_STATUS_RECEIVER_DATA_PRESENT & DRV_USART_TransferStatus(rs485Data.usartHandle))
-	{
-		dummy = DRV_USART_ReadByte(rs485Data.usartHandle);
-	}
-	for (clearBufferCounter = 0; clearBufferCounter < RX_TX_BUFFER_SIZE; clearBufferCounter++)
-	{
-		buffer[clearBufferCounter] = '\0';
-	}
 }
 
 void ClearReceiveBuffer()
@@ -142,17 +108,5 @@ void RS485_Direction_Mode(bool directionMode)
 		RS485_Receiving_Mode();
 	}
 }
-
-
-//void PutCharInFifo
-//{
-//
-//}
-//
-//
-//void GetCharFromFifo()
-//{
-//	
-//}
 
 

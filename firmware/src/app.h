@@ -60,8 +60,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system_definitions.h"
 
 #include "Display.h"
-#include "RS485_Driver.h"
-#include "RS485_Commands.h"
+#include "rs485_driver.h"
+//#include "RS485_Commands.h"
 #include "Menu_Driver.h"
 
 // DOM-IGNORE-BEGIN
@@ -170,6 +170,8 @@ typedef struct
 	uint8_t positionList;
 
 	bool isUsartOpened;
+
+	bool correctMessage;
 
 	E_MODULE_ID moduleSelected;
 

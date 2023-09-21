@@ -1,8 +1,8 @@
 //-----------------------------------------------------------
-// File Name    : rs485_driver.h	                        |
+// File Name    : RS485_Driver.h	                        |
 // Project Name : 2313_instrlabomodulaire                   |
 // Version      : V1                                        |
-// Date         : 13.09.2023                                |
+// Date         : 11.09.2023                                |
 // Author       : Alexandre Steffen                         |
 //-----------------------------------------------------------
 #ifndef RS485_DRIVER_H	/* Guard against multiple inclusion */
@@ -10,25 +10,16 @@
 #include <stdio.h>
 #include <string.h>
 #include "system_definitions.h"
+#include "RS485_Commands.h"
 
 #define DEFAULT_RS485_MODE RECEIVE
 
-#define MAX_NB_COMMANDS 100
-
-#define RX_TX_BUFFER_SIZE 16
-
-//#define LAST_CMD_CHAR '~'
+#define LAST_CMD_CHAR '~'
 
 #define SENDING false
 #define RECEIVING true
 
 #define MESSAGE_TIMEOUT 10 //unit in [ms]
-
-typedef struct
-{
-	char command[5];	// 4 characters for the cmd + '\0' for NULL
-	void (*cmdFunctionPtr)(const char* cmdParameter);	//Function pointer
-}COMMAND_MAPPING;
 
 typedef enum
 {
@@ -41,21 +32,25 @@ typedef enum
 	ID_7,
 }E_ID_MODULES;
 
-typedef struct
+typedef enum
 {
-	uint8_t id;
-	char command[5];
-	char parameter[9];
-	char buffer[RX_TX_BUFFER_SIZE];
-}RX_TX_DATA;
+	CMD_CORRECT = 0,
+	CMD_NOT_RECEIVED,
+	CMD_WRONG,
+}E_PARSE_USART;
 
 typedef struct
 {
 	DRV_HANDLE usartHandle;
 	bool selectedDirection;
 	bool isResponseTimeoutReached;
+
 	uint8_t messageDataTimeout;
+
+	char receivedMessage[20];
+
 	E_ID_MODULES id;
+	E_Command command;
 	uint8_t parameter;
 }RS485_DATA;
 
@@ -65,17 +60,11 @@ bool SendMessage(char txBuffer[8]);
 
 bool GetMessage(char* rxBuffer);
 
-bool RegisterCommand(const char* command, void (*functionPtr)(const char* cmdParameter));
-
-bool IdChecker(uint8_t idToCheck);
-
 uint8_t ExtractId(char *rxBuffer);
 
 uint8_t ExtractCommand(char *rxBuffer);
 
 uint8_t ExtractParameter(char *rxBuffer);
-
-void ClearBuffer(char* buffer);
 
 void MessageDataTimeoutReset(void);
 
@@ -86,5 +75,6 @@ void RS485_Sending_Mode(void);
 void RS485_Receiving_Mode(void);
 
 uint8_t GetID(void);
+
 
 #endif
