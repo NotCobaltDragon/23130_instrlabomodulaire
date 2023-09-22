@@ -254,7 +254,7 @@ void APP_Tasks (void)
 			{
 				appData.state = APP_STATE_RECEIVE_COMMAND;
 			}
-			else if(appData.needSendCommand == true || correctMessage == false)
+			else if(appData.needSendCommand == true || appData.correctMessage == false)
 			{
 				appData.state = APP_STATE_SEND_COMMAND;
 			}

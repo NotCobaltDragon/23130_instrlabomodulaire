@@ -285,7 +285,7 @@ void DisplayErrorScreen(E_ERROR_HANDLER error);
 
 void NeedDisplayUpdate(void);
 
-void NeedSendCommand(E_MODULE_ID id, E_Command command, uint8_t parameter);
+void NeedSendCommand(uint8_t id, const char* command, const char* parameter);
 
 #endif /* _APP_H */
 

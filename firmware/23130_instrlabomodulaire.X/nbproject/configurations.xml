@@ -250,6 +250,23 @@
         <linkerTool>
           <linkerLibItems>
             <linkerLibFileItem>../../../../../bin/framework/peripheral/PIC32MX230F256D_peripherals.a</linkerLibFileItem>
+            <linkerLibProjectItem>
+              <makeArtifact PL="../../../2313_libraries/rs485_driver/rs485_driver.X"
+                            CT="3"
+                            CN="default"
+                            AC="true"
+                            BL="true"
+                            WD="../../../2313_libraries/rs485_driver/rs485_driver.X"
+                            BC="${MAKE}  -f Makefile CONF=default"
+                            DBC="${MAKE}  -f Makefile CONF=default TYPE_IMAGE=DEBUG_RUN"
+                            CC="rm -rf &quot;build/default&quot; &quot;dist/default&quot;"
+                            OP="dist/default/production/rs485_driver.X.a"
+                            DOP="dist/default/debug/rs485_driver.X.a"
+                            FL="dist/default/production/rs485_driver.X.a"
+                            PD="dist/default/production/rs485_driver.X."
+                            DD="dist/default/debug/rs485_driver.X.">
+              </makeArtifact>
+            </linkerLibProjectItem>
           </linkerLibItems>
         </linkerTool>
         <archiverTool>
@@ -612,7 +629,7 @@
         <property key="hwtoolclock.frcindebug" value="false"/>
         <property key="lastid" value=""/>
         <property key="memories.aux" value="false"/>
-        <property key="memories.bootflash" value="true"/>
+        <property key="memories.bootflash" value="false"/>
         <property key="memories.configurationmemory" value="true"/>
         <property key="memories.configurationmemory2" value="true"/>
         <property key="memories.dataflash" value="true"/>
@@ -623,7 +640,7 @@
         <property key="memories.instruction.ram.ranges"
                   value="${memories.instruction.ram.ranges}"/>
         <property key="memories.programmemory" value="true"/>
-        <property key="memories.programmemory.ranges" value="1d000000-1d003fff"/>
+        <property key="memories.programmemory.ranges" value="1d000000-1d03ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
         <property key="programmerToGoImageName" value="23130_instrlabomodulaire_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
