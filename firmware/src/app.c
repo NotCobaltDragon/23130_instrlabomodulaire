@@ -195,12 +195,14 @@ void APP_Tasks (void)
 
 			//TODO add error handling if USART didn't opened
 
-			appData.state = APP_STATE_POWER_ON;
+			ResetExternalModules();
+			appData.powerOnState = false;
+			appData.state = APP_STATE_MODULE_SCANNING;
 			
 			break;
 		}
 
-		case APP_STATE_POWER_ON:
+		case APP_STATE_MODULE_SCANNING:
 		{
 			/*if(modulePointer < QTY_MODULES)
 			{
@@ -219,8 +221,6 @@ void APP_Tasks (void)
 				}
 				
 			}*/
-
-			//TODO: Function for reseting all modules (RST1...RST7)
 
 			//NeedSendCommand(MODULE_1, E_CMD_IDQUESTION, 0);
 
@@ -250,19 +250,18 @@ void APP_Tasks (void)
 			Display_Task();
 			Menu_Task();
 
-			if((appData.expectingResponse == true)&&(!DRV_USART_ReceiverBufferIsEmpty(rs485Data.usartHandle)))
+			if(appData.correctMessage == false)
 			{
-				appData.state = APP_STATE_RECEIVE_COMMAND;
-			}
-			else if(appData.needSendCommand == true || appData.correctMessage == false)
-			{
-				appData.state = APP_STATE_SEND_COMMAND;
+
 			}
 
+			if((appData.expectingResponse == true)&&(!DRV_USART_ReceiverBufferIsEmpty(rs485Data.usartHandle)))
+				appData.state = APP_STATE_RECEIVE_COMMAND;
+			else if(appData.needSendCommand == true)
+				appData.state = APP_STATE_SEND_COMMAND;
+
 			if(appData.needDisplayUpdate == true)
-			{
 				appData.state = APP_STATE_DISPLAY_CHANGE;
-			}
 			break;
 		}
 
@@ -270,10 +269,14 @@ void APP_Tasks (void)
 		{
 			RS485_Direction_Mode(SENDING);
 			//sprintf(txBuffer, "ID%d%s%d", rs485Data.id, cmdData[rs485Data.command], rs485Data.parameter);
-			appData.needSendCommand = SendMessage(sending.buffer);
+			//appData.needSendCommand = SendMessage(sending.buffer);
+			SendMessage("ID2VMCM1");
 			appData.expectingResponse = true;
 			RS485_Direction_Mode(RECEIVING);
-			appData.state = APP_STATE_SERVICE_TASKS;
+			if(appData.powerOnState == true)
+				appData.state = APP_STATE_MODULE_SCANNING;
+			else
+				appData.state = APP_STATE_SERVICE_TASKS;
 			break;
 		}
 		case APP_STATE_RECEIVE_COMMAND:
@@ -286,15 +289,26 @@ void APP_Tasks (void)
 			//	&& strcmp(received.command, sending.command) == 0
 			//	&& strcmp(received.parameter, sending.parameter) == 0)
 			{
-				appData.correctMessage == true;
+				//appData.correctMessage == true;
 			}
 			else
 			{
-				appData.correctMessage == false;
+				//appData.correctMessage == false;
+				appData.state = APP_STATE_SEND_COMMAND;
 			}
 
-			appData.expectingResponse = false;
-			appData.state = APP_STATE_SERVICE_TASKS;
+			if(appData.powerOnState == true)
+			{
+
+				appData.state = APP_STATE_MODULE_SCANNING;
+			}
+			else
+			{
+				appData.expectingResponse = false;
+				appData.state = APP_STATE_SERVICE_TASKS;
+			}
+
+			
 			break;
 		}
 		case APP_STATE_DISPLAY_CHANGE:
@@ -363,6 +377,25 @@ void NeedDisplayUpdate()
 void CommandSendIntervalCallback()
 {
 	appData.periodicVoltage++;
+}
+
+void ResetExternalModules()
+{
+	RST1On();
+	RST2On();
+	RST3On();
+	RST4On();
+	RST5On();
+	RST6On();
+	RST7On();
+
+	RST1Off();
+	RST2Off();
+	RST3Off();
+	RST4Off();
+	RST5Off();
+	RST6Off();
+	RST7Off();
 }
 /*******************************************************************************
  End of File

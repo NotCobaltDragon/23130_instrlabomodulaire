@@ -87,6 +87,8 @@ extern "C" {
 #define DC_MODE false
 #define AC_MODE true
 
+#define MODULE_VOLTMETER "23132"
+
 // *****************************************************************************
 /* Application states
 
@@ -103,6 +105,7 @@ typedef enum
 	/* Application's state machine's initial state. */
 	APP_STATE_INIT=0,
 	APP_STATE_POWER_ON,
+	APP_STATE_MODULE_SCANNING,
 	APP_STATE_SERVICE_TASKS,
 	APP_STATE_DISPLAY_CHANGE,
 	APP_STATE_SEND_COMMAND,
@@ -172,6 +175,8 @@ typedef struct
 	bool isUsartOpened;
 
 	bool correctMessage;
+
+	bool powerOnState;
 
 	E_MODULE_ID moduleSelected;
 
@@ -286,6 +291,8 @@ void DisplayErrorScreen(E_ERROR_HANDLER error);
 void NeedDisplayUpdate(void);
 
 void NeedSendCommand(uint8_t id, const char* command, const char* parameter);
+
+void ResetExternalModules(void);
 
 #endif /* _APP_H */
 

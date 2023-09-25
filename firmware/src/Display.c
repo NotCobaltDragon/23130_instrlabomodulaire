@@ -280,10 +280,15 @@ void DisplayValues_MainMenu(
 	uint8_t positionList, uint8_t positionCursor,
 	uint8_t moduleA, uint8_t moduleB, uint8_t moduleC)
 {
+
+	const char nameModulesData[2][12] =	//11 is the maximum characters on screen + 1
+	{
+		"Not mounted",
+		"Voltmeter",
+	};
 	char slotA[20];
 	char slotB[20];
 	char slotC[20];
-
 
 	if(disp.currentScreenNr == DISP_SCR_MAIN_MENU)
 	{
