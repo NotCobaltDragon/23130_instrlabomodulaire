@@ -205,6 +205,7 @@ void DisplayScreen_Error(void);
  */
 void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position);
 
+void DrawVoltSymbol(bool currentMode, uint8_t posX, uint8_t posY);
 //void DrawMenuIcon(bool selected);
 
 void DisplayScreen_23132(bool setToDark);

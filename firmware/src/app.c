@@ -92,6 +92,8 @@ RX_TX_DATA received;
 //char rxBuffer[8];
 E_MODULE_ID modulePointer = MODULE_1;
 
+char *dummyptr;	//Pointer for a function but updated value is not used
+
 //E_POWER_ON_STATE powerOnState;
 
 // *****************************************************************************
@@ -127,6 +129,7 @@ void UpdateDisplayValues()
 	
 	DisplayValues_23132(
 		voltmeter23132.valueVoltmeter,
+		//appData.dummyVoltage,
 		voltmeter23132.currentMode,
 		voltmeter23132.holdMode,
 		appData.positionCursor);
@@ -157,6 +160,7 @@ void APP_Initialize ( void )
 	appData.backlightColor = COL_WHITE;
 	appData.positionCursor = 0;
 	appData.positionList = 0;
+	appData.needSendCommand = false;
 }
 
 
@@ -192,11 +196,14 @@ void APP_Tasks (void)
 
 			//Open USART for RS485
 			appData.isUsartOpened = Init_RS485(SENDING);
-
-			//TODO add error handling if USART didn't opened
-
+//
+			if(appData.isUsartOpened == false)
+			{
+				LED1On();
+				//ErrorHandler();	//TODO add error handling if USART didn't opened
+			}
 			ResetExternalModules();
-			appData.powerOnState = false;
+			//appData.powerOnState = false;
 			appData.state = APP_STATE_MODULE_SCANNING;
 			
 			break;
@@ -204,30 +211,7 @@ void APP_Tasks (void)
 
 		case APP_STATE_MODULE_SCANNING:
 		{
-			/*if(modulePointer < QTY_MODULES)
-			{
-				switch(powerOnState)
-				{
-					case SEND_IDENTIFICATION:
-						NeedSendCommand(modulePointer, E_CMD_IDQUESTION, 0);
-						appData.state = APP_STATE_SEND_COMMAND;
-						break;
-					case RECEIVE_INDENTIFICATION:
-						break;
-					case 
-						break;
-					default:
-						break;
-				}
-				
-			}*/
-
-			//NeedSendCommand(MODULE_1, E_CMD_IDQUESTION, 0);
-
-
-
-			//FOR TESTING, REPLACE BY AUTOMATIC DATA COLLECTION WITH
-			//IDxID? COMMAND.
+			//ATM FOR TESTING, REPLACE LATER BY AUTOMATIC DATA COLLECTION WITH IDxID? COMMAND.
 			slotData[1].model = MODULE_23132;
 			slotData[1].id = MODULE_2;
 			//slotData[2].model = MODULE_23132;
@@ -238,6 +222,12 @@ void APP_Tasks (void)
 			//slotData[6].model = EMPTY;
 
 			VoltmeterInit();
+
+			//appData.isUsartOpened = Init_RS485(SENDING);
+
+			//if(appData.isUsartOpened == false)
+			//	LED1On();
+				//ErrorHandler();	//TODO add error handling if USART didn't opened
 			
 			//END CODE TESTING
 			appData.currentScreen = DISP_SCR_MAIN_MENU;
@@ -246,59 +236,67 @@ void APP_Tasks (void)
 		}
 		case APP_STATE_SERVICE_TASKS:
 		{
-			Display_Task();
-			Menu_Task();
-
-			if(appData.correctMessage == false)
-			{
-
-			}
-
-			if((appData.expectingResponse == true)&&(!DRV_USART_ReceiverBufferIsEmpty(rs485Data.usartHandle)))
-				appData.state = APP_STATE_RECEIVE_COMMAND;
-			else if(appData.needSendCommand == true)
-				appData.state = APP_STATE_SEND_COMMAND;
-
 			if(appData.needDisplayUpdate == true)
+			{
 				appData.state = APP_STATE_DISPLAY_CHANGE;
+			}
+			if(appData.needSendCommand == true)
+			{
+				appData.state = APP_STATE_SEND_COMMAND;
+			}
+			else if((appData.expectingResponse == true)&&(!DRV_USART_ReceiverBufferIsEmpty(rs485Data.usartHandle)))
+			{
+				appData.state = APP_STATE_RECEIVE_COMMAND;
+			}
+			else
+			{
+				Display_Task();
+				Menu_Task();
+			}
 			break;
 		}
 		case APP_STATE_SEND_COMMAND:
 		{
 			RS485_Direction_Mode(SENDING);
-			//sprintf(txBuffer, "ID%d%s%d", rs485Data.id, cmdData[rs485Data.command], rs485Data.parameter);
-			//appData.needSendCommand = SendMessage(sending.buffer);
-			SendMessage("ID2VMCM1");
+			SendMessage(sending.buffer);
+			appData.needSendCommand = false;
 			appData.expectingResponse = true;
 			RS485_Direction_Mode(RECEIVING);
-			if(appData.powerOnState == true)
-				appData.state = APP_STATE_MODULE_SCANNING;
-			else
-				appData.state = APP_STATE_SERVICE_TASKS;
+			appData.state = APP_STATE_SERVICE_TASKS;
 			break;
 		}
 		case APP_STATE_RECEIVE_COMMAND:
 		{
-			//rxBuffer[0] = GetMessage(rxBuffer);
 			GetMessage(received.buffer);
-			sscanf(received.buffer, "ID%u%4s%s", &received.id, received.command, received.parameter);
-			if(strcmp(received.buffer, sending.buffer) == 0)
+			if(sending.command == "VMRV" && sending.parameter == "?")
 			{
-				if(appData.powerOnState == true)
-				{
-					appData.state = APP_STATE_MODULE_SCANNING;
-				}
-				else
-				{
-					appData.expectingResponse = false;
-					appData.state = APP_STATE_SERVICE_TASKS;
-				}
+				sscanf(received.buffer, "ID%u%s", &received.id, received.parameter);
+				voltmeter23132.valueVoltmeter = strtod(received.parameter, &dummyptr);
+				NeedDisplayUpdate();
 			}
 			else
 			{
-				//appData.correctMessage == false;
-				appData.state = APP_STATE_SEND_COMMAND;
+				sscanf(received.buffer, "ID%u%4s%s", &received.id, received.command, received.parameter);
 			}
+			//if(IdChecker(received.id, sending.id) == true
+			//	&& strcmp(received.command, sending.command) == 0
+			//	&& strcmp(received.parameter, sending.parameter) == 0)
+					//{
+				//if(appData.powerOnState == true)
+				//{
+				//	appData.state = APP_STATE_MODULE_SCANNING;
+				//}
+				//else
+				//{
+			appData.expectingResponse = false;
+			appData.state = APP_STATE_SERVICE_TASKS;
+				//}
+			//}
+			//else
+			//{
+			//	//appData.correctMessage == false;
+			//	appData.state = APP_STATE_SEND_COMMAND;
+			//}
 			break;
 		}
 		case APP_STATE_DISPLAY_CHANGE:
@@ -333,7 +331,7 @@ void APP_Tasks (void)
 void InitCommands()
 {
 	//RegisterCommand(GC_GETID_CMD, AskModuleId);
-	Register(MODULE_VOLTMETER, VoltmeterInit);
+	RegisterModule(MODULE_VOLTMETER, VoltmeterInit);
 }
 
 void VoltmeterInit()
@@ -342,21 +340,10 @@ void VoltmeterInit()
 	//should ideally be the same on modules code
 	voltmeter23132.currentMode = DC_MODE;
 	voltmeter23132.holdMode = false;
-	voltmeter23132.valueVoltmeter = 53.29;	//Example test value
+	voltmeter23132.valueVoltmeter = 0.000;	//Example test value
 	//RegisterCommand(VM_SET_GAIN_CMD, SetVoltmeterGain);
 	//RegisterCommand(VM_SET_MODE_CMD, SetVoltmeterMode);
 	//RegisterCommand(VM_READ_VOLTAGE_CMD, GetVoltmeterValue);
-}
-
-void NeedSendCommand(uint8_t id, const char* command, const char* parameter)
-{
-	//rs485Data.id = id;
-	//rs485Data.command = command;
-	//rs485Data.parameter = parameter;
-
-	sprintf(sending.buffer, "ID%d%s%s", sending.id, sending.command, sending.parameter);
-	//sending.id = id;
-	appData.needSendCommand = true;
 }
 
 void NeedDisplayUpdate()
@@ -366,7 +353,14 @@ void NeedDisplayUpdate()
 
 void CommandSendIntervalCallback()
 {
-	appData.periodicVoltage++;
+	if(appData.currentScreen == DISP_SCR_23132)
+		appData.periodicVoltage++;
+	appData.dummyVoltage+= 0.001;
+
+	if(appData.dummyVoltage >= 9.99)
+	{
+		appData.dummyVoltage = 0.000;
+	}
 }
 
 void ResetExternalModules()

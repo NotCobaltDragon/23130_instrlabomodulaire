@@ -46,10 +46,10 @@ void Menu_Task()
 						break;
 					case MODULE_23132:
 					{
-						appData.currentScreen = DISP_SCR_23132;
 						appData.moduleSelected = slotData[appData.positionCursor + appData.positionList].id;
 						appData.positionCursor = 0;
 						appData.positionList = 0;
+						appData.currentScreen = DISP_SCR_23132;
 						break;
 					}
 					default:
@@ -76,7 +76,7 @@ void Menu_Task()
 				NeedDisplayUpdate();
 				Pec12DecClear();
 			}
-			else if(pec12.statePb == true)
+			else if(pec12.statePb == true && appData.needSendCommand == false)
 			{
 				switch(appData.positionCursor)
 				{
@@ -86,15 +86,12 @@ void Menu_Task()
 						break;
 					case 1:
 						voltmeter23132.currentMode = !voltmeter23132.currentMode;
-
-						//char tempChar;
-						//sprintf(tempChar, "%u", voltmeter23132.currentMode);
-						//char tempChar = 
-						//NeedSendCommand(appData.moduleSelected, "VMCM", );
 						if(voltmeter23132.currentMode == true)
 							sprintf(sending.buffer, "ID%dVMCM%c", appData.moduleSelected, '1');
 						else
 							sprintf(sending.buffer, "ID%dVMCM%c", appData.moduleSelected, '0');
+						sprintf(sending.command, "VMCM");
+						sprintf(sending.parameter, "\0");
 						appData.needSendCommand = true;
 						NeedDisplayUpdate();
 						break;
@@ -110,14 +107,18 @@ void Menu_Task()
 				NeedDisplayUpdate();
 				Pec12PbClear();
 			}
-			if(appData.needSendCommand == false 
-				&& appData.expectingResponse == false 
-				&& appData.periodicVoltage >= GET_VOLTAGE_FREQUENCY)
+			if((appData.needSendCommand == false) 
+				&& (appData.expectingResponse == false) 
+				&& (appData.periodicVoltage >= GET_VOLTAGE_FREQUENCY))
 			{
 				//NeedSendCommand(appData.moduleSelected, "VMRV", 0);
-				sprintf(sending.buffer, "ID%dVMRV", appData.moduleSelected, '0');
+				sprintf(sending.buffer, "ID%dVMRV?", appData.moduleSelected);
+				sprintf(sending.command, "VMRV");
+				sprintf(sending.parameter, "?");
+				//sending.command = "VMRV";
 				appData.needSendCommand = true;
 				appData.periodicVoltage = 0;
+				LED1Toggle();
 			}
 			break;
 		}

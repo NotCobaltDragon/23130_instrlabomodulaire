@@ -267,6 +267,17 @@ void DrawHoldMode(bool holdMode, bool selected)
 	UG_PutString(66, 55, "HOLD");*/
 }
 
+void DrawVoltSymbol(bool currentMode, uint8_t posX, uint8_t posY)
+{
+	UG_FontSelect(&FONT_16X26);
+	UG_PutString(posX, posY, "V");
+	UG_FontSelect(&FONT_7X12);
+	if(currentMode == 0)
+		UG_PutString((posX+14), (posY+12), "DC");
+	else
+		UG_PutString((posX+14), (posY+12), "AC");
+}
+
 ///@}
 
 /* ************************************************************************** */
@@ -305,16 +316,16 @@ void DisplayValues_MainMenu(
 		switch(positionCursor)
 		{
 			case 0:
-				UG_DrawLine(2, 18, 4, 20, C_BLACK);	//TODO: Function for arrow with xy as parameters
-				UG_DrawLine(2, 22, 4, 20, C_BLACK);
+				UG_DrawLine(3, 17, 5, 19, C_BLACK);	//TODO: Function for arrow with xy as parameters
+				UG_DrawLine(3, 21, 5, 19, C_BLACK);
 				break;
 			case 1:
-				UG_DrawLine(2, 35, 4, 37, C_BLACK);
-				UG_DrawLine(2, 39, 4, 37, C_BLACK);
+				UG_DrawLine(3, 34, 5, 36, C_BLACK);
+				UG_DrawLine(3, 38, 5, 36, C_BLACK);
 				break;
 			case 2:
-				UG_DrawLine(2, 52, 4, 54, C_BLACK);
-				UG_DrawLine(2, 56, 4, 54, C_BLACK);
+				UG_DrawLine(3, 51, 5, 53, C_BLACK);
+				UG_DrawLine(3, 55, 5, 53, C_BLACK);
 				break;
 			default:
 				break;
@@ -332,18 +343,17 @@ void DisplayValues_MainMenu(
  */
 void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position)
 {
-	char str[7];
+	static char str[9];
 
 	if(disp.currentScreenNr == DISP_SCR_23132)
 	{
+		UG_FontSelect(&FONT_16X26);
+		UG_SetBackcolor (C_WHITE);
+		UG_SetForecolor (C_BLACK);
 		if(holdMode == false)
-		{
-			UG_FontSelect(&FONT_16X26);
-			UG_SetBackcolor (C_WHITE);
-			UG_SetForecolor (C_BLACK);
-			sprintf(str, "%2.2f", voltmeterValue);
-			UG_PutString(3, 17, str);
-		}
+			sprintf(str, "%1.3f", voltmeterValue);
+		UG_PutString(3, 20, str);
+		DrawVoltSymbol(currentMode, 90, 20);
 		DrawMenuIcon(false);
 		DrawCurrentMode(currentMode, false);
 		DrawHoldMode(holdMode, false);

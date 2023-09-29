@@ -5,6 +5,7 @@
 // Date         : 13.09.2023                                |
 // Author       : Alexandre Steffen                         |
 //-----------------------------------------------------------
+//#include "C:\microchip\harmony\v2_06\apps\2313_instrlabomodulaire\23132_instrlabomodulaire\firmware\src\rs485_driver.h"
 #include "rs485_driver.h"
 
 #define MESS_SIZE
@@ -12,6 +13,8 @@
 RS485_DATA rs485Data;
 
 COMMAND_MAPPING commandMapping[MAX_NB_COMMANDS];
+
+MODULE_MAPPING moduleMapping[MAX_NB_MODULES];
 
 
 bool Init_RS485(bool defaultDirection)
@@ -46,17 +49,35 @@ bool RegisterCommand(const char* command, void (*functionPtr)(const char* cmdPar
 	}
 }
 
+bool RegisterModule(const char* moduleTag, void(*functionPtr))
+{
+	static uint8_t numModules = 0;
+
+	if(numModules < MAX_NB_MODULES)
+	{
+		strcpy(moduleMapping[numModules].parameter, moduleTag);
+		moduleMapping[numModules].moduleTagPtr = functionPtr;
+		numModules++;
+		return true;	//Module Registered
+	}
+	else
+	{
+		return false;	//Number of possible modules exeeded (should never happen)
+	}
+}
+
 bool SendMessage(char txBuffer[RX_TX_BUFFER_SIZE])
 {
 	//bool needSendCommand = true;
 	int nbByteWritten = 0;
-	uint8_t bufferSize = strlen(txBuffer);
+	uint8_t bufferSize = (strlen(txBuffer) + 1);
 
 	while(nbByteWritten < bufferSize)
 	{
 		if(!DRV_USART_TransmitBufferIsFull(rs485Data.usartHandle))
 			DRV_USART_WriteByte(rs485Data.usartHandle, txBuffer[nbByteWritten++]);
 	}
+	DRV_USART_WriteByte(rs485Data.usartHandle, '\0');
 	while(!(DRV_USART_TRANSFER_STATUS_TRANSMIT_EMPTY & DRV_USART_TransferStatus(rs485Data.usartHandle))){}
 	return false;
 }
@@ -77,9 +98,9 @@ bool GetMessage(char* rxBuffer)
 	return true;
 }
 
-bool IdChecker(uint8_t idToCheck)
+bool IdChecker(uint8_t idToCheck, uint8_t id)
 {
-	if(idToCheck == rs485Data.id)
+	if(idToCheck == id)
 		return true;	//Correct ID
 	else
 		return false;	//ID incorrect or not concerned
@@ -87,7 +108,7 @@ bool IdChecker(uint8_t idToCheck)
 
 void ClearBuffer(char* buffer)
 {
-	char dummy;
+	char dummy __attribute__((unused));
 	uint8_t clearBufferCounter = 0;
 
 	while(DRV_USART_TRANSFER_STATUS_RECEIVER_DATA_PRESENT & DRV_USART_TransferStatus(rs485Data.usartHandle))
