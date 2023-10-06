@@ -70,7 +70,7 @@ bool SendMessage(char txBuffer[RX_TX_BUFFER_SIZE])
 {
 	//bool needSendCommand = true;
 	int nbByteWritten = 0;
-	uint8_t bufferSize = (strlen(txBuffer) + 1);
+	uint8_t bufferSize = (strlen(txBuffer));
 
 	while(nbByteWritten < bufferSize)
 	{
@@ -84,7 +84,7 @@ bool SendMessage(char txBuffer[RX_TX_BUFFER_SIZE])
 
 bool GetMessage(char* rxBuffer)
 {
-	int nbByteReceived = 0;
+	uint8_t nbByteReceived = 0;
 	MessageDataTimeoutReset();
 	do
 	{
@@ -93,7 +93,7 @@ bool GetMessage(char* rxBuffer)
 			rxBuffer[nbByteReceived++] = DRV_USART_ReadByte(rs485Data.usartHandle);
 			MessageDataTimeoutReset();
 		}
-	}while((nbByteReceived < 8) && (rs485Data.isResponseTimeoutReached != true));
+	}while((nbByteReceived < 8)&&(rs485Data.isResponseTimeoutReached != true)&&(rxBuffer[nbByteReceived-1]!='\0'));
 	//if(rs485Data.isResponseTimeoutReached)
 	return true;
 }

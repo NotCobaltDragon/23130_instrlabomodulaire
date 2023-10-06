@@ -53,6 +53,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // *****************************************************************************
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -83,7 +84,7 @@ extern "C" {
 
 #define QTY_MODULES 7
 
-#define GET_VOLTAGE_FREQUENCY 100 // unit in *10[ms]
+#define GET_VOLTAGE_INTERVAL 200 // unit in *10[ms]
 
 #define DC_MODE false
 #define AC_MODE true
@@ -175,12 +176,6 @@ typedef struct
 
 	bool isUsartOpened;
 
-	bool correctMessage;
-
-	bool powerOnState;
-
-	float dummyVoltage;
-
 	E_MODULE_ID moduleSelected;
 
 	E_ERROR_HANDLER errorHandler;
@@ -202,6 +197,7 @@ typedef struct
 typedef struct
 {
 	float valueVoltmeter;
+	char valueVoltmeterString[7];
 	bool currentMode;
 	bool holdMode;
 } VOLTMETER_23132;
@@ -289,7 +285,7 @@ void APP_Tasks( void );
 
 void VoltmeterInit(void);
 
-void DisplayErrorScreen(E_ERROR_HANDLER error);
+//void DisplayErrorScreen(E_ERROR_HANDLER error);
 
 void NeedDisplayUpdate(void);
 

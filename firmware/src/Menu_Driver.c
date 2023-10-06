@@ -107,19 +107,6 @@ void Menu_Task()
 				NeedDisplayUpdate();
 				Pec12PbClear();
 			}
-			if((appData.needSendCommand == false) 
-				&& (appData.expectingResponse == false) 
-				&& (appData.periodicVoltage >= GET_VOLTAGE_FREQUENCY))
-			{
-				//NeedSendCommand(appData.moduleSelected, "VMRV", 0);
-				sprintf(sending.buffer, "ID%dVMRV?", appData.moduleSelected);
-				sprintf(sending.command, "VMRV");
-				sprintf(sending.parameter, "?");
-				//sending.command = "VMRV";
-				appData.needSendCommand = true;
-				appData.periodicVoltage = 0;
-				LED1Toggle();
-			}
 			break;
 		}
 

@@ -203,7 +203,7 @@ void DisplayScreen_Error(void);
  * @param  b    valeur b
  * @param  c    valeur c 
  */
-void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position);
+void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position, char* voltmeterValueString);
 
 void DrawVoltSymbol(bool currentMode, uint8_t posX, uint8_t posY);
 //void DrawMenuIcon(bool selected);

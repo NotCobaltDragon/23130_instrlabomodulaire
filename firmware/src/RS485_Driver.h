@@ -16,7 +16,7 @@
 #define MAX_NB_COMMANDS 100
 #define MAX_NB_MODULES 15
 
-#define RX_TX_BUFFER_SIZE 16
+#define RX_TX_BUFFER_SIZE 9
 
 //#define LAST_CMD_CHAR '~'
 

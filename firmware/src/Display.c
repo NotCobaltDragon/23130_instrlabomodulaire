@@ -341,19 +341,30 @@ void DisplayValues_MainMenu(
  * 
  * @param  a    valeur a 
  */
-void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position)
+void DisplayValues_23132(float voltmeterValue, bool currentMode, bool holdMode, uint8_t position, char* voltmeterValueString)
 {
 	static char str[9];
 
 	if(disp.currentScreenNr == DISP_SCR_23132)
 	{
 		UG_FontSelect(&FONT_16X26);
+		//UG_FontSelect(&FONT_6X8);
 		UG_SetBackcolor (C_WHITE);
 		UG_SetForecolor (C_BLACK);
 		if(holdMode == false)
-			sprintf(str, "%1.3f", voltmeterValue);
+			if(voltmeterValue <= 9.999 && voltmeterValue>=0.000)
+				sprintf(str, "%1.3f", voltmeterValue);
+			else if(voltmeterValue<=99.99||voltmeterValue>=-9.99)
+				sprintf(str, "%2.2f", voltmeterValue);
+			else if(voltmeterValue<=110.9||voltmeterValue>=-99.9)
+				sprintf(str, "%3.1f", voltmeterValue);
+			else
+				sprintf(str, "%s", "OL");
+			//sprintf(str, "%3.3f", voltmeterValue);
+			//sprintf(str, "%s", voltmeterValueString);
+			//sprintf(str, "%1.3f", voltmeterValue);
 		UG_PutString(3, 20, str);
-		DrawVoltSymbol(currentMode, 90, 20);
+		DrawVoltSymbol(currentMode, 98, 20);
 		DrawMenuIcon(false);
 		DrawCurrentMode(currentMode, false);
 		DrawHoldMode(holdMode, false);

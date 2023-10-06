@@ -94,8 +94,6 @@ E_MODULE_ID modulePointer = MODULE_1;
 
 char *dummyptr;	//Pointer for a function but updated value is not used
 
-//E_POWER_ON_STATE powerOnState;
-
 // *****************************************************************************
 // *****************************************************************************
 // Section: Application Callback Functions
@@ -129,10 +127,10 @@ void UpdateDisplayValues()
 	
 	DisplayValues_23132(
 		voltmeter23132.valueVoltmeter,
-		//appData.dummyVoltage,
 		voltmeter23132.currentMode,
 		voltmeter23132.holdMode,
-		appData.positionCursor);
+		appData.positionCursor,
+		voltmeter23132.valueVoltmeterString);
 }
 
 // *****************************************************************************
@@ -187,7 +185,6 @@ void APP_Tasks (void)
 		/* Application's initial state. */
 		case APP_STATE_INIT:
 		{
-			appData.errorHandler = NO_ERROR;
 			DRV_TMR0_Start();
 			DRV_TMR1_Start();
 			DRV_TMR2_Start();
@@ -203,7 +200,6 @@ void APP_Tasks (void)
 				//ErrorHandler();	//TODO add error handling if USART didn't opened
 			}
 			ResetExternalModules();
-			//appData.powerOnState = false;
 			appData.state = APP_STATE_MODULE_SCANNING;
 			
 			break;
@@ -223,12 +219,6 @@ void APP_Tasks (void)
 
 			VoltmeterInit();
 
-			//appData.isUsartOpened = Init_RS485(SENDING);
-
-			//if(appData.isUsartOpened == false)
-			//	LED1On();
-				//ErrorHandler();	//TODO add error handling if USART didn't opened
-			
 			//END CODE TESTING
 			appData.currentScreen = DISP_SCR_MAIN_MENU;
 			appData.state = APP_STATE_DISPLAY_CHANGE;	
@@ -236,10 +226,7 @@ void APP_Tasks (void)
 		}
 		case APP_STATE_SERVICE_TASKS:
 		{
-			if(appData.needDisplayUpdate == true)
-			{
-				appData.state = APP_STATE_DISPLAY_CHANGE;
-			}
+			
 			if(appData.needSendCommand == true)
 			{
 				appData.state = APP_STATE_SEND_COMMAND;
@@ -248,10 +235,14 @@ void APP_Tasks (void)
 			{
 				appData.state = APP_STATE_RECEIVE_COMMAND;
 			}
+			else if(appData.needDisplayUpdate == true)
+			{
+				appData.state = APP_STATE_DISPLAY_CHANGE;
+			}
 			else
 			{
-				Display_Task();
 				Menu_Task();
+				Display_Task();
 			}
 			break;
 		}
@@ -268,35 +259,26 @@ void APP_Tasks (void)
 		case APP_STATE_RECEIVE_COMMAND:
 		{
 			GetMessage(received.buffer);
-			if(sending.command == "VMRV" && sending.parameter == "?")
-			{
-				sscanf(received.buffer, "ID%u%s", &received.id, received.parameter);
-				voltmeter23132.valueVoltmeter = strtod(received.parameter, &dummyptr);
-				NeedDisplayUpdate();
-			}
-			else
-			{
-				sscanf(received.buffer, "ID%u%4s%s", &received.id, received.command, received.parameter);
-			}
-			//if(IdChecker(received.id, sending.id) == true
-			//	&& strcmp(received.command, sending.command) == 0
-			//	&& strcmp(received.parameter, sending.parameter) == 0)
-					//{
-				//if(appData.powerOnState == true)
-				//{
-				//	appData.state = APP_STATE_MODULE_SCANNING;
-				//}
-				//else
-				//{
-			appData.expectingResponse = false;
+            sscanf(received.buffer, "ID%1u", &received.id);
+            if(IdChecker(received.id, appData.moduleSelected)==true)
+            {
+            	if(strcmp(sending.command, "VMRV\0") == 0 /*&& sending.parameter == "?"*/)
+				{
+					strcpy(voltmeter23132.valueVoltmeterString, (received.buffer + 3));
+					voltmeter23132.valueVoltmeter = atof(voltmeter23132.valueVoltmeterString);
+					//sscanf(received.buffer, "ID%1u%s", &received.id, received.parameter);
+					//voltmeter23132.valueVoltmeter = strtod(received.parameter, &dummyptr);
+					//sprintf(voltmeter23132.valueVoltmeterString, "%s", received.parameter);
+					NeedDisplayUpdate();
+				}
+				else
+				{
+					sscanf(received.buffer, "ID%u%4s%s", &received.id, received.command, received.parameter);
+				}
+            }
+            ClearBuffer(received.buffer);
+            appData.expectingResponse = false;
 			appData.state = APP_STATE_SERVICE_TASKS;
-				//}
-			//}
-			//else
-			//{
-			//	//appData.correctMessage == false;
-			//	appData.state = APP_STATE_SEND_COMMAND;
-			//}
 			break;
 		}
 		case APP_STATE_DISPLAY_CHANGE:
@@ -341,6 +323,8 @@ void VoltmeterInit()
 	voltmeter23132.currentMode = DC_MODE;
 	voltmeter23132.holdMode = false;
 	voltmeter23132.valueVoltmeter = 0.000;	//Example test value
+	sprintf(voltmeter23132.valueVoltmeterString, "%s", "0.000");
+
 	//RegisterCommand(VM_SET_GAIN_CMD, SetVoltmeterGain);
 	//RegisterCommand(VM_SET_MODE_CMD, SetVoltmeterMode);
 	//RegisterCommand(VM_READ_VOLTAGE_CMD, GetVoltmeterValue);
@@ -355,11 +339,17 @@ void CommandSendIntervalCallback()
 {
 	if(appData.currentScreen == DISP_SCR_23132)
 		appData.periodicVoltage++;
-	appData.dummyVoltage+= 0.001;
-
-	if(appData.dummyVoltage >= 9.99)
+	if(appData.periodicVoltage>=GET_VOLTAGE_INTERVAL 
+            && appData.currentScreen == DISP_SCR_23132)
 	{
-		appData.dummyVoltage = 0.000;
+		if(appData.expectingResponse == false && appData.needSendCommand == false)
+		{
+			appData.periodicVoltage = 0;
+			sprintf(sending.buffer, "ID%dVMRV?", appData.moduleSelected);
+			sprintf(sending.command, "VMRV");
+			sprintf(sending.parameter, "?");
+			appData.needSendCommand = true;
+		}
 	}
 }
 
